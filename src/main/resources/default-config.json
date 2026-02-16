@@ -1,0 +1,65 @@
+{
+  "general": {
+    "language": "en",
+    "messagePrefix": "<dark_gray>[<gold>Reforge<dark_gray>]",
+    "maxReforgeLevel": 10,
+    "debugMode": false,
+    "failureReturnRate": 0.30,
+    "protectionEnabled": true,
+    "protectionCostMultiplier": 2.0
+  },
+  "levels": {
+    "1":  { "successChance": 0.90, "weaponDamageBonus": 2.0,  "armorDefenseBonus": 1.5,  "coinCost": 100.0,  "materials": [{ "itemId": "Ingredient_Bar_Iron", "count": 2 }] },
+    "2":  { "successChance": 0.85, "weaponDamageBonus": 2.5,  "armorDefenseBonus": 2.0,  "coinCost": 200.0,  "materials": [{ "itemId": "Ingredient_Bar_Iron", "count": 4 }] },
+    "3":  { "successChance": 0.75, "weaponDamageBonus": 3.0,  "armorDefenseBonus": 2.5,  "coinCost": 350.0,  "materials": [{ "itemId": "Ingredient_Bar_Iron", "count": 6 }] },
+    "4":  { "successChance": 0.65, "weaponDamageBonus": 3.5,  "armorDefenseBonus": 3.0,  "coinCost": 500.0,  "materials": [{ "itemId": "Ingredient_Bar_Cobalt", "count": 4 }] },
+    "5":  { "successChance": 0.55, "weaponDamageBonus": 4.0,  "armorDefenseBonus": 3.5,  "coinCost": 750.0,  "materials": [{ "itemId": "Ingredient_Bar_Cobalt", "count": 6 }] },
+    "6":  { "successChance": 0.45, "weaponDamageBonus": 5.0,  "armorDefenseBonus": 4.0,  "coinCost": 1000.0, "materials": [{ "itemId": "Ingredient_Bar_Cobalt", "count": 8 }] },
+    "7":  { "successChance": 0.35, "weaponDamageBonus": 6.0,  "armorDefenseBonus": 5.0,  "coinCost": 1500.0, "materials": [{ "itemId": "Ingredient_Bar_Mithril", "count": 4 }] },
+    "8":  { "successChance": 0.25, "weaponDamageBonus": 7.0,  "armorDefenseBonus": 6.0,  "coinCost": 2000.0, "materials": [{ "itemId": "Ingredient_Bar_Mithril", "count": 6 }] },
+    "9":  { "successChance": 0.15, "weaponDamageBonus": 9.0,  "armorDefenseBonus": 7.5,  "coinCost": 3000.0, "materials": [{ "itemId": "Ingredient_Bar_Adamantite", "count": 4 }] },
+    "10": { "successChance": 0.05, "weaponDamageBonus": 12.0, "armorDefenseBonus": 10.0, "coinCost": 5000.0, "materials": [{ "itemId": "Ingredient_Bar_Onyxium", "count": 4 }] }
+  },
+  "allowedItems": {
+    "weapons": [
+      "Weapon_*"
+    ],
+    "armor": [
+      "Armor_*"
+    ]
+  },
+  "reverseRecipes": {
+    "Weapon_Sword_Iron":        [{ "itemId": "Ingredient_Bar_Iron", "count": 12 }],
+    "Weapon_Sword_Cobalt":      [{ "itemId": "Ingredient_Bar_Cobalt", "count": 12 }],
+    "Weapon_Sword_Mithril":     [{ "itemId": "Ingredient_Bar_Mithril", "count": 12 }],
+    "Weapon_Sword_Adamantite":  [{ "itemId": "Ingredient_Bar_Adamantite", "count": 12 }],
+    "Weapon_Axe_Iron":          [{ "itemId": "Ingredient_Bar_Iron", "count": 16 }],
+    "Weapon_Axe_Cobalt":        [{ "itemId": "Ingredient_Bar_Cobalt", "count": 16 }],
+    "Weapon_Axe_Mithril":       [{ "itemId": "Ingredient_Bar_Mithril", "count": 16 }],
+    "Weapon_Axe_Adamantite":    [{ "itemId": "Ingredient_Bar_Adamantite", "count": 16 }],
+    "Weapon_Daggers_Iron":      [{ "itemId": "Ingredient_Bar_Iron", "count": 20 }],
+    "Weapon_Daggers_Cobalt":    [{ "itemId": "Ingredient_Bar_Cobalt", "count": 20 }],
+    "Weapon_Daggers_Mithril":   [{ "itemId": "Ingredient_Bar_Mithril", "count": 20 }],
+    "Weapon_Daggers_Adamantite":[{ "itemId": "Ingredient_Bar_Adamantite", "count": 20 }],
+    "Armor_Iron_Head":          [{ "itemId": "Ingredient_Bar_Iron", "count": 14 }],
+    "Armor_Iron_Chest":         [{ "itemId": "Ingredient_Bar_Iron", "count": 28 }],
+    "Armor_Iron_Legs":          [{ "itemId": "Ingredient_Bar_Iron", "count": 20 }],
+    "Armor_Iron_Hands":         [{ "itemId": "Ingredient_Bar_Iron", "count": 10 }],
+    "Armor_Iron_Feet":          [{ "itemId": "Ingredient_Bar_Iron", "count": 10 }],
+    "Armor_Cobalt_Head":        [{ "itemId": "Ingredient_Bar_Cobalt", "count": 14 }],
+    "Armor_Cobalt_Chest":       [{ "itemId": "Ingredient_Bar_Cobalt", "count": 28 }],
+    "Armor_Cobalt_Legs":        [{ "itemId": "Ingredient_Bar_Cobalt", "count": 20 }],
+    "Armor_Cobalt_Hands":       [{ "itemId": "Ingredient_Bar_Cobalt", "count": 10 }],
+    "Armor_Cobalt_Feet":        [{ "itemId": "Ingredient_Bar_Cobalt", "count": 10 }],
+    "Armor_Mithril_Head":       [{ "itemId": "Ingredient_Bar_Mithril", "count": 14 }],
+    "Armor_Mithril_Chest":      [{ "itemId": "Ingredient_Bar_Mithril", "count": 28 }],
+    "Armor_Mithril_Legs":       [{ "itemId": "Ingredient_Bar_Mithril", "count": 20 }],
+    "Armor_Mithril_Hands":      [{ "itemId": "Ingredient_Bar_Mithril", "count": 10 }],
+    "Armor_Mithril_Feet":       [{ "itemId": "Ingredient_Bar_Mithril", "count": 10 }],
+    "Armor_Adamantite_Head":    [{ "itemId": "Ingredient_Bar_Adamantite", "count": 14 }],
+    "Armor_Adamantite_Chest":   [{ "itemId": "Ingredient_Bar_Adamantite", "count": 28 }],
+    "Armor_Adamantite_Legs":    [{ "itemId": "Ingredient_Bar_Adamantite", "count": 20 }],
+    "Armor_Adamantite_Hands":   [{ "itemId": "Ingredient_Bar_Adamantite", "count": 10 }],
+    "Armor_Adamantite_Feet":    [{ "itemId": "Ingredient_Bar_Adamantite", "count": 10 }]
+  }
+}

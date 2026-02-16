@@ -1,0 +1,21 @@
+{
+    "Group": "com.crystalrealm",
+    "Name": "EcoTaleReforging",
+    "Version": "1.0.2",
+    "Description": "Blacksmith NPC reforging system — progressive weapon/armor upgrading with materials, coins, and risk mechanics for Hytale servers.",
+    "Main": "com.crystalrealm.ecotalereforging.EcoTaleReforgingPlugin",
+    "IncludesAssetPack": true,
+    "Authors": [
+        {
+            "Name": "CrystalRealm",
+            "Url": "https://hytale-server.pro-gamedev.ru"
+        }
+    ],
+    "ServerVersion": ">=1.0.0",
+    "Dependencies": {},
+    "OptionalDependencies": {
+        "Ecotale:Ecotale": ">=1.0.0",
+        "LuckPerms:LuckPerms": "*",
+        "org.herolias:DynamicTooltipsLib": "*"
+    }
+}

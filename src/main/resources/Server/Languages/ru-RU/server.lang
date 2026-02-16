@@ -1,0 +1,8 @@
+# === EcoTaleReforging Block Names ===
+
+# === Block Names ===
+items.EcoTale_Reforge_Station.name=Станция Перековки
+
+# === Interaction Hints ===
+interactionHints.reforge=Перековка
+server.interactionHints.reforge=Перековка

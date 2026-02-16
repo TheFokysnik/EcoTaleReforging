@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.crystalrealm'
+version = '1.0.2'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    stubs {
+        java.srcDirs = ['src/stubs/java']
+    }
+}
+
+dependencies {
+    // Hytale server stubs (compile-only)
+    compileOnly sourceSets.stubs.output
+
+    // JSR-305 annotations (@Nonnull, @Nullable)
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+
+    // Gson for JSON config & storage
+    compileOnly 'com.google.code.gson:gson:2.10.1'
+
+    // Stubs need JSR-305 too
+    stubsCompileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+}
+
+jar {
+    archiveBaseName.set('EcoTaleReforging')
+    archiveVersion.set(version)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// ── Deploy ──────────────────────────────────────────────────────
+// The plugin JAR goes to %APPDATA%/Hytale/UserData/Mods/.
+// Assets (Server/, Common/, manifest.json) are bundled inside the JAR
+// and extracted automatically by the plugin on first startup
+// (see AssetExtractor.java).
+
+def hytaleModsDir = file("${System.getenv('APPDATA')}/Hytale/UserData/Mods")
+
+tasks.register('deploy') {
+    description = 'Build JAR and deploy to Hytale Mods directory'
+    group = 'deploy'
+    dependsOn 'build'
+
+    doLast {
+        copy {
+            from jar.archiveFile
+            into hytaleModsDir
+        }
+        println "Deployed ${jar.archiveFileName.get()} to ${hytaleModsDir}"
+    }
+}

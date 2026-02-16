@@ -1,0 +1,327 @@
+$C = "../Common.ui";
+
+@GoldTitle = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 22,
+  TextColor: #f0c040,
+  RenderBold: true,
+  HorizontalAlignment: Center
+);
+
+@SectionLabel = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 14,
+  TextColor: #f0c040,
+  RenderBold: true
+);
+
+@White = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #e8edf2
+);
+
+@WhiteBold = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 14,
+  TextColor: #ffffff,
+  RenderBold: true
+);
+
+@ItemLabel = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #d0d8e0,
+  VerticalAlignment: Center
+);
+
+@Gray = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 12,
+  TextColor: #8a95a5
+);
+
+@SmGray = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 11,
+  TextColor: #7a8595
+);
+
+@Value = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 14,
+  TextColor: #55ff88,
+  RenderBold: true
+);
+
+@Gold = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #f0c040,
+  RenderBold: true
+);
+
+@StatName = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 12,
+  TextColor: #8a95a5
+);
+
+@StatValue = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 12,
+  TextColor: #e8edf2,
+  RenderBold: true
+);
+
+@Error = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #ff5555,
+  RenderBold: true
+);
+
+@Success = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #55ff55,
+  RenderBold: true
+);
+
+@BtnLabel = LabelStyle(
+  FontSize: 14,
+  RenderBold: true,
+  TextColor: #ffffff,
+  HorizontalAlignment: Center,
+  VerticalAlignment: Center
+);
+
+@ForgeStyle = TextButtonStyle(
+  Default: (Background: #8a4010, LabelStyle: @BtnLabel),
+  Hovered: (Background: #aa5518, LabelStyle: @BtnLabel),
+  Pressed: (Background: #6e330c, LabelStyle: @BtnLabel),
+  Disabled: (Background: #2a2520, LabelStyle: (...@BtnLabel, TextColor: #666655)),
+  Sounds: $C.@ButtonSounds
+);
+
+$C.@PageOverlay {
+  LayoutMode: Middle;
+
+  $C.@DecoratedContainer {
+    Anchor: (Width: 720, Height: 580);
+
+    #Title {
+      Label #TitleLabel { Style: @GoldTitle; Text: "Blacksmith's Forge"; }
+    }
+
+    #Content {
+      LayoutMode: Top;
+      Padding: (Full: 8);
+
+      Group #ErrorBanner { Anchor: (Height: 22); Visible: false;
+        Label #ErrorText { Style: @Error; Text: ""; }
+      }
+      Group #SuccessBanner { Anchor: (Height: 22); Visible: false;
+        Label #SuccessText { Style: @Success; Text: ""; }
+      }
+
+      Group {
+        LayoutMode: TopScrolling;
+        FlexWeight: 1;
+        ScrollbarStyle: $C.@DefaultScrollbarStyle;
+
+        Label #InventoryHeader { Style: @SectionLabel; Anchor: (Height: 22); Text: "Inventory"; }
+
+        // Item slots with icons (Button > ItemIcon + Label)
+        Group #ItemSlot0Wrap { Anchor: (Height: 36); Visible: false;
+          Button #ItemSlot0 { Anchor: (Width: 680, Height: 34); Background: (Color: #1a2a3a); LayoutMode: Left; Padding: (Left: 6, Right: 6); Style: (Hovered: (Background: (Color: #253848)), Pressed: (Background: (Color: #0e1e2e)));
+            ItemIcon #ItemIcon0 { Anchor: (Width: 28, Height: 28); }
+            Group { Anchor: (Width: 6); }
+            Label #ItemLabel0 { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+          }
+        }
+        Group #ItemSlot1Wrap { Anchor: (Height: 36); Visible: false;
+          Button #ItemSlot1 { Anchor: (Width: 680, Height: 34); Background: (Color: #1a2a3a); LayoutMode: Left; Padding: (Left: 6, Right: 6); Style: (Hovered: (Background: (Color: #253848)), Pressed: (Background: (Color: #0e1e2e)));
+            ItemIcon #ItemIcon1 { Anchor: (Width: 28, Height: 28); }
+            Group { Anchor: (Width: 6); }
+            Label #ItemLabel1 { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+          }
+        }
+        Group #ItemSlot2Wrap { Anchor: (Height: 36); Visible: false;
+          Button #ItemSlot2 { Anchor: (Width: 680, Height: 34); Background: (Color: #1a2a3a); LayoutMode: Left; Padding: (Left: 6, Right: 6); Style: (Hovered: (Background: (Color: #253848)), Pressed: (Background: (Color: #0e1e2e)));
+            ItemIcon #ItemIcon2 { Anchor: (Width: 28, Height: 28); }
+            Group { Anchor: (Width: 6); }
+            Label #ItemLabel2 { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+          }
+        }
+        Group #ItemSlot3Wrap { Anchor: (Height: 36); Visible: false;
+          Button #ItemSlot3 { Anchor: (Width: 680, Height: 34); Background: (Color: #1a2a3a); LayoutMode: Left; Padding: (Left: 6, Right: 6); Style: (Hovered: (Background: (Color: #253848)), Pressed: (Background: (Color: #0e1e2e)));
+            ItemIcon #ItemIcon3 { Anchor: (Width: 28, Height: 28); }
+            Group { Anchor: (Width: 6); }
+            Label #ItemLabel3 { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+          }
+        }
+        Group #ItemSlot4Wrap { Anchor: (Height: 36); Visible: false;
+          Button #ItemSlot4 { Anchor: (Width: 680, Height: 34); Background: (Color: #1a2a3a); LayoutMode: Left; Padding: (Left: 6, Right: 6); Style: (Hovered: (Background: (Color: #253848)), Pressed: (Background: (Color: #0e1e2e)));
+            ItemIcon #ItemIcon4 { Anchor: (Width: 28, Height: 28); }
+            Group { Anchor: (Width: 6); }
+            Label #ItemLabel4 { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+          }
+        }
+        Group #ItemSlot5Wrap { Anchor: (Height: 36); Visible: false;
+          Button #ItemSlot5 { Anchor: (Width: 680, Height: 34); Background: (Color: #1a2a3a); LayoutMode: Left; Padding: (Left: 6, Right: 6); Style: (Hovered: (Background: (Color: #253848)), Pressed: (Background: (Color: #0e1e2e)));
+            ItemIcon #ItemIcon5 { Anchor: (Width: 28, Height: 28); }
+            Group { Anchor: (Width: 6); }
+            Label #ItemLabel5 { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+          }
+        }
+        Group #ItemSlot6Wrap { Anchor: (Height: 36); Visible: false;
+          Button #ItemSlot6 { Anchor: (Width: 680, Height: 34); Background: (Color: #1a2a3a); LayoutMode: Left; Padding: (Left: 6, Right: 6); Style: (Hovered: (Background: (Color: #253848)), Pressed: (Background: (Color: #0e1e2e)));
+            ItemIcon #ItemIcon6 { Anchor: (Width: 28, Height: 28); }
+            Group { Anchor: (Width: 6); }
+            Label #ItemLabel6 { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+          }
+        }
+        Group #ItemSlot7Wrap { Anchor: (Height: 36); Visible: false;
+          Button #ItemSlot7 { Anchor: (Width: 680, Height: 34); Background: (Color: #1a2a3a); LayoutMode: Left; Padding: (Left: 6, Right: 6); Style: (Hovered: (Background: (Color: #253848)), Pressed: (Background: (Color: #0e1e2e)));
+            ItemIcon #ItemIcon7 { Anchor: (Width: 28, Height: 28); }
+            Group { Anchor: (Width: 6); }
+            Label #ItemLabel7 { Style: @ItemLabel; FlexWeight: 1; Text: ""; }
+          }
+        }
+
+        Group #NoItemsWrap { Anchor: (Height: 22); Visible: false;
+          Label #NoItemsLabel { Style: @SmGray; Text: ""; }
+        }
+
+        Group { Anchor: (Height: 10); }
+
+        // Selected item info with big icon
+        Label #ItemInfoHeader { Style: @SectionLabel; Anchor: (Height: 22); Text: "Item Info"; }
+
+        Group #SelectedItemRow { LayoutMode: Left; Anchor: (Height: 48); Visible: false; Padding: (Left: 4);
+          ItemIcon #SelectedItemIcon { Anchor: (Width: 40, Height: 40); }
+          Group { Anchor: (Width: 8); }
+          Group { LayoutMode: Top; FlexWeight: 1;
+            Label #ItemName { Style: @WhiteBold; Anchor: (Height: 22); Text: ""; }
+            Label #ItemCategory { Style: @Gray; Anchor: (Height: 18); Text: ""; }
+          }
+        }
+
+        Group { LayoutMode: Left; Anchor: (Height: 20); Padding: (Left: 4);
+          Label #LblLevel { Style: @Gray; Anchor: (Width: 140); Text: "Reforge Level:"; }
+          Label #ItemLevel { Style: @Gold; Text: ""; }
+        }
+        Group { LayoutMode: Left; Anchor: (Height: 20); Padding: (Left: 4);
+          Label #LblStats { Style: @Gray; Anchor: (Width: 140); Text: "Stats:"; }
+          Label #ItemStats { Style: @Value; Text: ""; }
+        }
+
+        // Weapon stats from WeaponStatsViewer
+        Group #WeaponStatsSection { Visible: false; LayoutMode: Top;
+          Group { Anchor: (Height: 4); }
+          Label #WeaponStatsHeader { Style: @SectionLabel; Anchor: (Height: 20); Text: "Weapon Stats"; }
+          Group { LayoutMode: Left; Anchor: (Height: 18); Padding: (Left: 8);
+            Label { Style: @StatName; Anchor: (Width: 130); Text: "Avg Damage:"; }
+            Label #WsAvgDmg { Style: @StatValue; Text: ""; }
+          }
+          Group { LayoutMode: Left; Anchor: (Height: 18); Padding: (Left: 8);
+            Label { Style: @StatName; Anchor: (Width: 130); Text: "Max Damage:"; }
+            Label #WsMaxDmg { Style: @StatValue; Text: ""; }
+          }
+          Group { LayoutMode: Left; Anchor: (Height: 18); Padding: (Left: 8);
+            Label { Style: @StatName; Anchor: (Width: 130); Text: "Quality:"; }
+            Label #WsQuality { Style: @StatValue; Text: ""; }
+          }
+          Group { LayoutMode: Left; Anchor: (Height: 18); Padding: (Left: 8);
+            Label { Style: @StatName; Anchor: (Width: 130); Text: "Signature Energy:"; }
+            Label #WsSigEnergy { Style: @StatValue; Text: ""; }
+          }
+          // Attack type rows
+          Group #WsAtk0Wrap { Anchor: (Height: 18); Visible: false; LayoutMode: Left; Padding: (Left: 8);
+            Label #WsAtkName0 { Style: @StatName; Anchor: (Width: 130); Text: ""; }
+            Label #WsAtkVal0 { Style: @StatValue; Text: ""; }
+          }
+          Group #WsAtk1Wrap { Anchor: (Height: 18); Visible: false; LayoutMode: Left; Padding: (Left: 8);
+            Label #WsAtkName1 { Style: @StatName; Anchor: (Width: 130); Text: ""; }
+            Label #WsAtkVal1 { Style: @StatValue; Text: ""; }
+          }
+          Group #WsAtk2Wrap { Anchor: (Height: 18); Visible: false; LayoutMode: Left; Padding: (Left: 8);
+            Label #WsAtkName2 { Style: @StatName; Anchor: (Width: 130); Text: ""; }
+            Label #WsAtkVal2 { Style: @StatValue; Text: ""; }
+          }
+          Group #WsAtk3Wrap { Anchor: (Height: 18); Visible: false; LayoutMode: Left; Padding: (Left: 8);
+            Label #WsAtkName3 { Style: @StatName; Anchor: (Width: 130); Text: ""; }
+            Label #WsAtkVal3 { Style: @StatValue; Text: ""; }
+          }
+          // Reforge bonus line
+          Group { LayoutMode: Left; Anchor: (Height: 18); Padding: (Left: 8);
+            Label { Style: @StatName; Anchor: (Width: 130); Text: "Reforge Bonus:"; }
+            Label #WsReforgeBonus { Style: (...@StatValue, TextColor: #55ff88); Text: ""; }
+          }
+          Group { LayoutMode: Left; Anchor: (Height: 18); Padding: (Left: 8);
+            Label { Style: @StatName; Anchor: (Width: 130); Text: "Total Avg Dmg:"; }
+            Label #WsTotalDmg { Style: (...@StatValue, TextColor: #f0c040); Text: ""; }
+          }
+        }
+
+        Group { Anchor: (Height: 8); }
+
+        Label #MaterialsHeader { Style: @SectionLabel; Anchor: (Height: 22); Text: "Materials"; }
+
+        // Material slots with icons (up to 4 material types)
+        Group #MatSlot0Wrap { Anchor: (Height: 30); Visible: false; LayoutMode: Left; Padding: (Left: 4);
+          ItemIcon #MatIcon0 { Anchor: (Width: 24, Height: 24); }
+          Group { Anchor: (Width: 6); }
+          Label #MatLabel0 { Style: @White; FlexWeight: 1; Text: ""; }
+        }
+        Group #MatSlot1Wrap { Anchor: (Height: 30); Visible: false; LayoutMode: Left; Padding: (Left: 4);
+          ItemIcon #MatIcon1 { Anchor: (Width: 24, Height: 24); }
+          Group { Anchor: (Width: 6); }
+          Label #MatLabel1 { Style: @White; FlexWeight: 1; Text: ""; }
+        }
+        Group #MatSlot2Wrap { Anchor: (Height: 30); Visible: false; LayoutMode: Left; Padding: (Left: 4);
+          ItemIcon #MatIcon2 { Anchor: (Width: 24, Height: 24); }
+          Group { Anchor: (Width: 6); }
+          Label #MatLabel2 { Style: @White; FlexWeight: 1; Text: ""; }
+        }
+        Group #MatSlot3Wrap { Anchor: (Height: 30); Visible: false; LayoutMode: Left; Padding: (Left: 4);
+          ItemIcon #MatIcon3 { Anchor: (Width: 24, Height: 24); }
+          Group { Anchor: (Width: 6); }
+          Label #MatLabel3 { Style: @White; FlexWeight: 1; Text: ""; }
+        }
+        Group { LayoutMode: Left; Anchor: (Height: 20); Padding: (Left: 4);
+          Label #LblCoinCost { Style: @Gray; Anchor: (Width: 120); Text: "Coin Cost:"; }
+          Label #CoinCost { Style: @Gold; Text: ""; }
+        }
+        Group { LayoutMode: Left; Anchor: (Height: 20); Padding: (Left: 4);
+          Label #LblSuccess { Style: @Gray; Anchor: (Width: 120); Text: "Success:"; }
+          Label #RiskLabel { Style: @Value; Text: ""; }
+        }
+
+        // Protection toggle
+        Group #ProtectionWrap { Anchor: (Height: 32); Visible: false; LayoutMode: Left; Padding: (Left: 4);
+          TextButton #ProtectionToggleBtn { Anchor: (Width: 200, Height: 26); Style: @ForgeStyle; Text: "Protection: OFF"; }
+          Group { Anchor: (Width: 8); }
+          Label #ProtectionCostLabel { Style: @Gold; FlexWeight: 1; Text: ""; }
+        }
+      }
+
+      Group { Anchor: (Height: 6); }
+
+      Group {
+        LayoutMode: Left;
+        Anchor: (Height: 36);
+        Padding: (Left: 4);
+
+        Group #RefreshBtnWrap {
+          $C.@SecondaryTextButton #RefreshBtn { Anchor: (Width: 180, Height: 30); Text: "Refresh"; }
+        }
+        Group { Anchor: (Width: 6); }
+        Group #ForgeBtnWrap {
+          TextButton #ForgeBtn { Anchor: (Width: 220, Height: 30); Style: @ForgeStyle; Text: "FORGE"; }
+        }
+      }
+    }
+  }
+}

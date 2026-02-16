@@ -1,0 +1,47 @@
+{
+  "TranslationProperties": {
+    "Name": "Reforge Station"
+  },
+  "Icon": "Icons/ItemsGenerated/EcoTale_Reforge_Station.png",
+  "ItemLevel": 10,
+  "MaxStack": 16,
+  "Categories": [
+    "Blocks.Rocks"
+  ],
+  "PlayerAnimationsId": "Block",
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModel": "Blocks/Benches/ReforgeStation.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Benches/ReforgeStation_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "VariantRotation": "NESW",
+    "HitboxType": "EcoTale_Reforge_Station",
+    "Interactions": {
+      "Use": {
+        "Interactions": []
+      }
+    },
+    "BlockParticleSetId": "Stone",
+    "ParticleColor": "#5C583E",
+    "Support": {
+      "Down": [
+        {
+          "FaceType": "Full"
+        }
+      ]
+    },
+    "BlockSoundSetId": "Stone"
+  },
+  "IconProperties": {
+    "Scale": 0.37,
+    "Rotation": [22.5, 45, 22.5],
+    "Translation": [18.7, -15]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Stone"
+}

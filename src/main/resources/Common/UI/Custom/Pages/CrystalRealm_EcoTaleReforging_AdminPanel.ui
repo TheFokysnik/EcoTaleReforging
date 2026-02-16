@@ -1,0 +1,574 @@
+$C = "../Common.ui";
+
+// =====================================================
+//  LABEL STYLES
+// =====================================================
+
+@GoldTitle = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 22,
+  TextColor: #f0c040,
+  RenderBold: true,
+  HorizontalAlignment: Center
+);
+
+@SectionTitle = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 15,
+  TextColor: #f0c040,
+  RenderBold: true
+);
+
+@White = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #e8edf2
+);
+
+@WhiteBold = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 14,
+  TextColor: #ffffff,
+  RenderBold: true
+);
+
+@Gray = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 12,
+  TextColor: #8a95a5
+);
+
+@SmGray = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 11,
+  TextColor: #7a8595
+);
+
+@Value = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 14,
+  TextColor: #55ff88,
+  RenderBold: true
+);
+
+@Gold = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #f0c040,
+  RenderBold: true
+);
+
+@Error = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #ff5555,
+  RenderBold: true,
+  HorizontalAlignment: Center
+);
+
+@Success = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #55ff88,
+  RenderBold: true,
+  HorizontalAlignment: Center
+);
+
+@FieldLabel = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 12,
+  TextColor: #a0b0c4
+);
+
+@FieldValue = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 13,
+  TextColor: #ffffff,
+  RenderBold: true
+);
+
+@MaterialsText = LabelStyle(
+  ...$C.@DefaultLabelStyle,
+  FontSize: 11,
+  TextColor: #c0ccdd
+);
+
+// =====================================================
+//  BUTTON STYLES
+// =====================================================
+
+@SmBtnLabelStyle = LabelStyle(
+  FontSize: 13,
+  RenderBold: true,
+  TextColor: #e0e8f0,
+  HorizontalAlignment: Center,
+  VerticalAlignment: Center
+);
+
+@SmBtnStyle = TextButtonStyle(
+  Default: (Background: #1a2a3a, LabelStyle: @SmBtnLabelStyle),
+  Hovered: (Background: #253a4a, LabelStyle: @SmBtnLabelStyle),
+  Pressed: (Background: #15202e, LabelStyle: @SmBtnLabelStyle),
+  Disabled: (Background: #151e2a, LabelStyle: (...@SmBtnLabelStyle, TextColor: #445566)),
+  Sounds: $C.@ButtonSounds
+);
+
+@NavBtnLabelStyle = LabelStyle(
+  FontSize: 14,
+  RenderBold: true,
+  TextColor: #f0c040,
+  HorizontalAlignment: Center,
+  VerticalAlignment: Center
+);
+
+@NavBtnStyle = TextButtonStyle(
+  Default: (Background: #2a2010, LabelStyle: @NavBtnLabelStyle),
+  Hovered: (Background: #3a3018, LabelStyle: @NavBtnLabelStyle),
+  Pressed: (Background: #22180c, LabelStyle: @NavBtnLabelStyle),
+  Disabled: (Background: #1a1810, LabelStyle: (...@NavBtnLabelStyle, TextColor: #665544)),
+  Sounds: $C.@ButtonSounds
+);
+
+@ActionBtnLabelStyle = LabelStyle(
+  FontSize: 12,
+  RenderBold: true,
+  TextColor: #eeffee,
+  HorizontalAlignment: Center,
+  VerticalAlignment: Center
+);
+
+@SaveBtnStyle = TextButtonStyle(
+  Default: (Background: #2a7a4a, LabelStyle: @ActionBtnLabelStyle),
+  Hovered: (Background: #35a060, LabelStyle: @ActionBtnLabelStyle),
+  Pressed: (Background: #226640, LabelStyle: @ActionBtnLabelStyle),
+  Disabled: (Background: #2a3545, LabelStyle: (...@ActionBtnLabelStyle, TextColor: #667788)),
+  Sounds: $C.@ButtonSounds
+);
+
+@ReloadBtnLabelStyle = LabelStyle(
+  FontSize: 12,
+  RenderBold: true,
+  TextColor: #fff5dd,
+  HorizontalAlignment: Center,
+  VerticalAlignment: Center
+);
+
+@ReloadBtnStyle = TextButtonStyle(
+  Default: (Background: #8a6520, LabelStyle: @ReloadBtnLabelStyle),
+  Hovered: (Background: #aa7d28, LabelStyle: @ReloadBtnLabelStyle),
+  Pressed: (Background: #705218, LabelStyle: @ReloadBtnLabelStyle),
+  Disabled: (Background: #3a3520, LabelStyle: (...@ReloadBtnLabelStyle, TextColor: #998866)),
+  Sounds: $C.@ButtonSounds
+);
+
+@ToggleBtnLabelStyle = LabelStyle(
+  FontSize: 11,
+  RenderBold: true,
+  TextColor: #c0d0e0,
+  HorizontalAlignment: Center,
+  VerticalAlignment: Center
+);
+
+@ToggleBtnStyle = TextButtonStyle(
+  Default: (Background: #1a2535, LabelStyle: @ToggleBtnLabelStyle),
+  Hovered: (Background: #253545, LabelStyle: @ToggleBtnLabelStyle),
+  Pressed: (Background: #151e2a, LabelStyle: @ToggleBtnLabelStyle),
+  Disabled: (Background: #151e2a, LabelStyle: (...@ToggleBtnLabelStyle, TextColor: #445566)),
+  Sounds: $C.@ButtonSounds
+);
+
+@RemoveBtnLabelStyle = LabelStyle(
+  FontSize: 13,
+  RenderBold: true,
+  TextColor: #ff6666,
+  HorizontalAlignment: Center,
+  VerticalAlignment: Center
+);
+
+@RemoveBtnStyle = TextButtonStyle(
+  Default: (Background: #3a1a1a, LabelStyle: @RemoveBtnLabelStyle),
+  Hovered: (Background: #4a2525, LabelStyle: @RemoveBtnLabelStyle),
+  Pressed: (Background: #2a1010, LabelStyle: @RemoveBtnLabelStyle),
+  Disabled: (Background: #1a1215, LabelStyle: (...@RemoveBtnLabelStyle, TextColor: #664444)),
+  Sounds: $C.@ButtonSounds
+);
+
+@AddBtnLabelStyle = LabelStyle(
+  FontSize: 13,
+  RenderBold: true,
+  TextColor: #66ff88,
+  HorizontalAlignment: Center,
+  VerticalAlignment: Center
+);
+
+@AddBtnStyle = TextButtonStyle(
+  Default: (Background: #1a3a1a, LabelStyle: @AddBtnLabelStyle),
+  Hovered: (Background: #254a25, LabelStyle: @AddBtnLabelStyle),
+  Pressed: (Background: #102a10, LabelStyle: @AddBtnLabelStyle),
+  Disabled: (Background: #121a15, LabelStyle: (...@AddBtnLabelStyle, TextColor: #446644)),
+  Sounds: $C.@ButtonSounds
+);
+
+// =====================================================
+//  MAIN LAYOUT
+// =====================================================
+
+$C.@PageOverlay {
+  LayoutMode: Middle;
+
+  $C.@DecoratedContainer {
+    Anchor: (Width: 700, Height: 1050);
+
+    // -- Title Bar --
+    #Title {
+      Background: (Color: #0a1020(0.9));
+      Label #TitleLabel { Style: @GoldTitle; Text: "Reforging Settings"; }
+    }
+
+    // -- Content Area --
+    #Content {
+      LayoutMode: Top;
+      Padding: (Left: 20, Right: 20, Top: 14, Bottom: 14);
+      Background: (Color: #080e1a);
+
+      // -- Status Banner --
+      Group #StatusBanner {
+        Anchor: (Height: 30); Visible: false;
+        Background: #153a1a(0.9);
+        Padding: (Left: 12, Right: 12, Top: 4, Bottom: 4);
+        Label #StatusText { Style: @Success; Text: ""; }
+      }
+
+      Group { Anchor: (Height: 6); }
+
+      // ═══════════════════════════════════════
+      //  SECTION: General Settings
+      // ═══════════════════════════════════════
+      Label #SecGeneral { Style: @SectionTitle; Anchor: (Height: 22); Text: "General Settings"; }
+
+      Group #GeneralCard {
+        Anchor: (Height: 186);
+        LayoutMode: Top;
+        Background: (Color: #111a2e(0.9));
+        Padding: (Left: 16, Right: 16, Top: 10, Bottom: 10);
+
+        // Debug mode row
+        Group #DebugRow {
+          Anchor: (Height: 24);
+          LayoutMode: Left;
+          Label #DebugLabel { Style: @FieldLabel; Anchor: (Width: 180); Text: "Debug Mode:"; }
+          Label #DebugValue { Style: @FieldValue; Anchor: (Width: 60); Text: "OFF"; }
+          TextButton #DebugToggleBtn { Anchor: (Width: 80, Height: 22); Style: @ToggleBtnStyle; Text: "Toggle"; }
+        }
+
+        // Language row
+        Group #LangRow {
+          Anchor: (Height: 24);
+          LayoutMode: Left;
+          Label #LangLabel { Style: @FieldLabel; Anchor: (Width: 180); Text: "Language:"; }
+          Label #LangValue { Style: @FieldValue; Anchor: (Width: 60); Text: "en"; }
+          TextButton #LangToggleBtn { Anchor: (Width: 80, Height: 22); Style: @ToggleBtnStyle; Text: "Toggle"; }
+        }
+
+        // Max level row
+        Group #MaxLevelRow {
+          Anchor: (Height: 24);
+          LayoutMode: Left;
+          Label #MaxLevelLabel { Style: @FieldLabel; Anchor: (Width: 180); Text: "Max Reforge Level:"; }
+          TextButton #MaxLevelDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
+          Label #MaxLevelValue { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 60); Text: "10"; }
+          TextButton #MaxLevelUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+        }
+
+        // Failure return rate row
+        Group #ReturnRateRow {
+          Anchor: (Height: 24);
+          LayoutMode: Left;
+          Label #ReturnRateLabel { Style: @FieldLabel; Anchor: (Width: 180); Text: "Failure Return Rate:"; }
+          TextButton #ReturnRateDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
+          Label #ReturnRateValue { Style: (...@Value, HorizontalAlignment: Center); Anchor: (Width: 60); Text: "30%"; }
+          TextButton #ReturnRateUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+        }
+
+        // Protection enabled row
+        Group #ProtectionRow {
+          Anchor: (Height: 24);
+          LayoutMode: Left;
+          Label #ProtectionLabel { Style: @FieldLabel; Anchor: (Width: 180); Text: "Protection:"; }
+          Label #ProtectionValue { Style: @FieldValue; Anchor: (Width: 60); Text: "ON"; }
+          TextButton #ProtectionToggleBtn { Anchor: (Width: 80, Height: 22); Style: @ToggleBtnStyle; Text: "Toggle"; }
+        }
+
+        // Protection cost multiplier row
+        Group #ProtCostRow {
+          Anchor: (Height: 24);
+          LayoutMode: Left;
+          Label #ProtCostLabel { Style: @FieldLabel; Anchor: (Width: 180); Text: "Prot. Cost Mult.:"; }
+          TextButton #ProtCostDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
+          Label #ProtCostValue { Style: (...@Value, HorizontalAlignment: Center); Anchor: (Width: 60); Text: "x2.0"; }
+          TextButton #ProtCostUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+        }
+      }
+
+      Group { Anchor: (Height: 10); }
+
+      // ═══════════════════════════════════════
+      //  SECTION: Level Editor
+      // ═══════════════════════════════════════
+      Label #SecLevelEditor { Style: @SectionTitle; Anchor: (Height: 22); Text: "Level Editor"; }
+
+      Group #LevelEditorCard {
+        Anchor: (Height: 260);
+        LayoutMode: Top;
+        Background: (Color: #111a2e(0.9));
+        Padding: (Left: 16, Right: 16, Top: 10, Bottom: 10);
+
+        // Level navigation
+        Group #LevelNavRow {
+          Anchor: (Height: 30);
+          LayoutMode: Left;
+          TextButton #PrevLevelBtn { Anchor: (Width: 40, Height: 28); Style: @NavBtnStyle; Text: "<"; }
+          Group { FlexWeight: 1; }
+          Label #CurrentLevelLabel { Style: (...@WhiteBold, HorizontalAlignment: Center); Anchor: (Width: 120); Text: "Level 1"; }
+          Group { FlexWeight: 1; }
+          TextButton #NextLevelBtn { Anchor: (Width: 40, Height: 28); Style: @NavBtnStyle; Text: ">"; }
+        }
+
+        Group { Anchor: (Height: 8); }
+
+        // Success chance
+        Group #ChanceRow {
+          Anchor: (Height: 26);
+          LayoutMode: Left;
+          Label #ChanceLabel { Style: @FieldLabel; Anchor: (Width: 160); Text: "Success Chance:"; }
+          TextButton #ChanceDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
+          Label #ChanceValue { Style: (...@Value, HorizontalAlignment: Center); Anchor: (Width: 80); Text: "90%"; }
+          TextButton #ChanceUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+        }
+
+        // Coin cost
+        Group #CostRow {
+          Anchor: (Height: 26);
+          LayoutMode: Left;
+          Label #CostLabel { Style: @FieldLabel; Anchor: (Width: 160); Text: "Coin Cost:"; }
+          TextButton #CostDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
+          Label #CostValue { Style: (...@Gold, HorizontalAlignment: Center); Anchor: (Width: 80); Text: "100"; }
+          TextButton #CostUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+        }
+
+        // Damage bonus
+        Group #DmgRow {
+          Anchor: (Height: 26);
+          LayoutMode: Left;
+          Label #DmgBonusLabel { Style: @FieldLabel; Anchor: (Width: 160); Text: "Damage Bonus:"; }
+          TextButton #DmgDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
+          Label #DmgValue { Style: (...@Value, HorizontalAlignment: Center); Anchor: (Width: 80); Text: "+2.0"; }
+          TextButton #DmgUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+        }
+
+        // Defense bonus
+        Group #DefRow {
+          Anchor: (Height: 26);
+          LayoutMode: Left;
+          Label #DefBonusLabel { Style: @FieldLabel; Anchor: (Width: 160); Text: "Defense Bonus:"; }
+          TextButton #DefDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
+          Label #DefValue { Style: (...@Value, HorizontalAlignment: Center); Anchor: (Width: 80); Text: "+1.5"; }
+          TextButton #DefUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+        }
+
+        Group { Anchor: (Height: 6); }
+
+        // Materials editor with icon
+        Group #MaterialsRow {
+          Anchor: (Height: 60);
+          LayoutMode: Top;
+          Label #MaterialsLabel { Style: @FieldLabel; Anchor: (Height: 16); Text: "Materials:"; }
+          Group { Anchor: (Height: 30); LayoutMode: Left;
+            ItemIcon #MatEditIcon { Anchor: (Width: 26, Height: 26); }
+            Group { Anchor: (Width: 6); }
+            TextButton #MatPrevBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "<"; }
+            Label #MaterialsValue { Style: (...@MaterialsText, HorizontalAlignment: Center, VerticalAlignment: Center); Anchor: (Width: 180, Height: 22); Text: ""; }
+            TextButton #MatNextBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: ">"; }
+            Group { Anchor: (Width: 10); }
+            TextButton #MatCountDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
+            Label #MatCountValue { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 40, Height: 22); Text: "2"; }
+            TextButton #MatCountUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+          }
+        }
+      }
+
+      Group { Anchor: (Height: 10); }
+
+      // ═══════════════════════════════════════
+      //  SECTION: Allowed Items
+      // ═══════════════════════════════════════
+      Label #SecAllowed { Style: @SectionTitle; Anchor: (Height: 22); Text: "Allowed Items"; }
+
+      Group #AllowedItemsCard {
+        Anchor: (Height: 160);
+        LayoutMode: Top;
+        Background: (Color: #111a2e(0.9));
+        Padding: (Left: 16, Right: 16, Top: 10, Bottom: 10);
+
+        // Weapons patterns row
+        Group #WeaponPatternRow {
+          Anchor: (Height: 28);
+          LayoutMode: Left;
+          Label #WpnLabel { Style: @FieldLabel; Anchor: (Width: 80); Text: "Weapons:"; }
+          TextButton #WpnPrevBtn { Anchor: (Width: 26, Height: 22); Style: @SmBtnStyle; Text: "<"; }
+          Label #WpnPatternLabel { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 200, Height: 22); Text: "Weapon_*"; }
+          TextButton #WpnNextBtn { Anchor: (Width: 26, Height: 22); Style: @SmBtnStyle; Text: ">"; }
+          Group { Anchor: (Width: 8); }
+          TextButton #WpnRemoveBtn { Anchor: (Width: 28, Height: 22); Style: @RemoveBtnStyle; Text: "X"; }
+          TextButton #WpnAddBtn { Anchor: (Width: 28, Height: 22); Style: @AddBtnStyle; Text: "+"; }
+          Group { Anchor: (Width: 6); }
+          Label #WpnCountLabel { Style: @SmGray; Anchor: (Width: 40, Height: 22); Text: "1/1"; }
+        }
+
+        Group { Anchor: (Height: 4); }
+
+        // Weapon character editor row
+        Group #WeaponEditRow {
+          Anchor: (Height: 26);
+          LayoutMode: Left;
+          Group { Anchor: (Width: 80); }
+          TextButton #WpnCurLeftBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "<"; }
+          TextButton #WpnCurRightBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: ">"; }
+          Group { Anchor: (Width: 6); }
+          Label #WpnPosLabel { Style: @SmGray; Anchor: (Width: 60, Height: 22); Text: "1/1"; }
+          Group { Anchor: (Width: 6); }
+          TextButton #WpnCharDownBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "v"; }
+          Label #WpnCharLabel { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 28, Height: 22); Text: "A"; }
+          TextButton #WpnCharUpBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "^"; }
+          Group { Anchor: (Width: 8); }
+          TextButton #WpnCharInsBtn { Anchor: (Width: 28, Height: 22); Style: @AddBtnStyle; Text: "+"; }
+          TextButton #WpnCharDelBtn { Anchor: (Width: 28, Height: 22); Style: @RemoveBtnStyle; Text: "-"; }
+        }
+
+        Group { Anchor: (Height: 8); }
+
+        // Armor patterns row
+        Group #ArmorPatternRow {
+          Anchor: (Height: 28);
+          LayoutMode: Left;
+          Label #ArmLabel { Style: @FieldLabel; Anchor: (Width: 80); Text: "Armor:"; }
+          TextButton #ArmPrevBtn { Anchor: (Width: 26, Height: 22); Style: @SmBtnStyle; Text: "<"; }
+          Label #ArmPatternLabel { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 200, Height: 22); Text: "Armor_*"; }
+          TextButton #ArmNextBtn { Anchor: (Width: 26, Height: 22); Style: @SmBtnStyle; Text: ">"; }
+          Group { Anchor: (Width: 8); }
+          TextButton #ArmRemoveBtn { Anchor: (Width: 28, Height: 22); Style: @RemoveBtnStyle; Text: "X"; }
+          TextButton #ArmAddBtn { Anchor: (Width: 28, Height: 22); Style: @AddBtnStyle; Text: "+"; }
+          Group { Anchor: (Width: 6); }
+          Label #ArmCountLabel { Style: @SmGray; Anchor: (Width: 40, Height: 22); Text: "1/1"; }
+        }
+
+        Group { Anchor: (Height: 4); }
+
+        // Armor character editor row
+        Group #ArmorEditRow {
+          Anchor: (Height: 26);
+          LayoutMode: Left;
+          Group { Anchor: (Width: 80); }
+          TextButton #ArmCurLeftBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "<"; }
+          TextButton #ArmCurRightBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: ">"; }
+          Group { Anchor: (Width: 6); }
+          Label #ArmPosLabel { Style: @SmGray; Anchor: (Width: 60, Height: 22); Text: "1/1"; }
+          Group { Anchor: (Width: 6); }
+          TextButton #ArmCharDownBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "v"; }
+          Label #ArmCharLabel { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 28, Height: 22); Text: "A"; }
+          TextButton #ArmCharUpBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "^"; }
+          Group { Anchor: (Width: 8); }
+          TextButton #ArmCharInsBtn { Anchor: (Width: 28, Height: 22); Style: @AddBtnStyle; Text: "+"; }
+          TextButton #ArmCharDelBtn { Anchor: (Width: 28, Height: 22); Style: @RemoveBtnStyle; Text: "-"; }
+        }
+      }
+
+      Group { Anchor: (Height: 10); }
+
+      // ═══════════════════════════════════════
+      //  SECTION: Reverse Recipes
+      // ═══════════════════════════════════════
+      Label #SecRecipes { Style: @SectionTitle; Anchor: (Height: 22); Text: "Reverse Recipes"; }
+
+      Group #RecipeEditorCard {
+        Anchor: (Height: 100);
+        LayoutMode: Top;
+        Background: (Color: #111a2e(0.9));
+        Padding: (Left: 16, Right: 16, Top: 10, Bottom: 10);
+
+        // Recipe navigation
+        Group #RecipeNavRow {
+          Anchor: (Height: 28);
+          LayoutMode: Left;
+          TextButton #PrevRecipeBtn { Anchor: (Width: 36, Height: 26); Style: @NavBtnStyle; Text: "<"; }
+          TextButton #RecipeRemoveBtn { Anchor: (Width: 28, Height: 24); Style: @RemoveBtnStyle; Text: "X"; }
+          Group { FlexWeight: 1; }
+          Label #RecipeNameLabel { Style: (...@WhiteBold, HorizontalAlignment: Center); Anchor: (Width: 250); Text: "Weapon_Sword_Iron"; }
+          Group { FlexWeight: 1; }
+          TextButton #RecipeAddBtn { Anchor: (Width: 28, Height: 24); Style: @AddBtnStyle; Text: "+"; }
+          TextButton #NextRecipeBtn { Anchor: (Width: 36, Height: 26); Style: @NavBtnStyle; Text: ">"; }
+        }
+
+        Group { Anchor: (Height: 6); }
+
+        // Recipe material row
+        Group #RecipeMatRow {
+          Anchor: (Height: 30);
+          LayoutMode: Left;
+          Label #RecipeMatLabel { Style: @FieldLabel; Anchor: (Width: 80); Text: "Returns:"; }
+          ItemIcon #RecipeMatIcon { Anchor: (Width: 26, Height: 26); }
+          Group { Anchor: (Width: 6); }
+          TextButton #RecipeMatPrevBtn { Anchor: (Width: 26, Height: 22); Style: @SmBtnStyle; Text: "<"; }
+          Label #RecipeMatName { Style: (...@MaterialsText, HorizontalAlignment: Center, VerticalAlignment: Center); Anchor: (Width: 140, Height: 22); Text: "Iron Bar"; }
+          TextButton #RecipeMatNextBtn { Anchor: (Width: 26, Height: 22); Style: @SmBtnStyle; Text: ">"; }
+          Group { Anchor: (Width: 10); }
+          TextButton #RecipeCountDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
+          Label #RecipeCountValue { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 50, Height: 22); Text: "12"; }
+          TextButton #RecipeCountUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+        }
+      }
+
+      Group { Anchor: (Height: 10); }
+
+      // ═══════════════════════════════════════
+      //  SECTION: Plugin Stats
+      // ═══════════════════════════════════════
+      Label #SecStats { Style: @SectionTitle; Anchor: (Height: 22); Text: "Plugin Stats"; }
+
+      Group #StatsCard {
+        Anchor: (Height: 52);
+        LayoutMode: Top;
+        Background: (Color: #111a2e(0.9));
+        Padding: (Left: 16, Right: 16, Top: 8, Bottom: 8);
+
+        Group {
+          Anchor: (Height: 18);
+          LayoutMode: Left;
+          Label #VersionLabel { Style: @FieldLabel; Anchor: (Width: 100); Text: "Version:"; }
+          Label #VersionValue { Style: @FieldValue; FlexWeight: 1; Text: "1.0.0"; }
+        }
+        Group {
+          Anchor: (Height: 18);
+          LayoutMode: Left;
+          Label #TotalLevelsLabel { Style: @FieldLabel; Anchor: (Width: 100); Text: "Total Levels:"; }
+          Label #TotalLevelsValue { Style: @FieldValue; FlexWeight: 1; Text: "10"; }
+        }
+      }
+
+      Group { Anchor: (Height: 12); }
+
+      // -- Action Buttons --
+      Group #ActionRow {
+        Anchor: (Height: 38);
+        LayoutMode: Left;
+        Padding: (Left: 30, Right: 30);
+
+        TextButton #ReloadBtn { Anchor: (Width: 140, Height: 34); Style: @ReloadBtnStyle; Text: "Reload"; }
+
+        Group { FlexWeight: 1; }
+
+        TextButton #SaveBtn { Anchor: (Width: 140, Height: 34); Style: @SaveBtnStyle; Text: "Save"; }
+      }
+    }
+  }
+}
