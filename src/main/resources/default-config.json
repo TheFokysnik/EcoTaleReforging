@@ -6,7 +6,9 @@
     "debugMode": false,
     "failureReturnRate": 0.30,
     "protectionEnabled": true,
-    "protectionCostMultiplier": 2.0
+    "protectionCostMultiplier": 2.0,
+    "_EconomyProviderOptions": "ecotale | economyapi",
+    "economyProvider": "ecotale"
   },
   "levels": {
     "1":  { "successChance": 0.90, "weaponDamageBonus": 2.0,  "armorDefenseBonus": 1.5,  "coinCost": 100.0,  "materials": [{ "itemId": "Ingredient_Bar_Iron", "count": 2 }] },
@@ -26,6 +28,14 @@
     ],
     "armor": [
       "Armor_*"
+    ],
+    "excluded": [
+      "Weapon_Arrow_*",
+      "Weapon_Bolt_*",
+      "Weapon_Shield_*",
+      "Weapon_Staff_*",
+      "Weapon_Crossbow_*",
+      "Weapon_Shortbow_*"
     ]
   },
   "reverseRecipes": {
@@ -61,5 +71,7 @@
     "Armor_Adamantite_Legs":    [{ "itemId": "Ingredient_Bar_Adamantite", "count": 20 }],
     "Armor_Adamantite_Hands":   [{ "itemId": "Ingredient_Bar_Adamantite", "count": 10 }],
     "Armor_Adamantite_Feet":    [{ "itemId": "Ingredient_Bar_Adamantite", "count": 10 }]
+  },
+  "customItems": {
   }
 }

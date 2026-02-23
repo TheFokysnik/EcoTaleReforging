@@ -5,7 +5,7 @@
 Часть **экосистемы EcoTale** — набора взаимосвязанных плагинов, которые вместе создают глубокую, управляемую игроками экономику на вашем сервере Hytale.
 
 ![Hytale Server Mod](https://img.shields.io/badge/Hytale-Server%20Mod-0ea5e9?style=for-the-badge)
-![Version](https://img.shields.io/badge/version-1.0.1-10b981?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.0.4-10b981?style=for-the-badge)
 ![Java](https://img.shields.io/badge/Java-17+-f97316?style=for-the-badge&logo=openjdk&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-a855f7?style=for-the-badge)
 

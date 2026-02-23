@@ -3,9 +3,9 @@ package com.crystalrealm.ecotalereforging.service;
 import com.crystalrealm.ecotalereforging.config.ReforgeConfig;
 import com.crystalrealm.ecotalereforging.model.ReforgeAttemptInfo;
 import com.crystalrealm.ecotalereforging.model.ReforgeResult;
+import com.crystalrealm.ecotalereforging.provider.economy.EconomyBridge;
 import com.crystalrealm.ecotalereforging.util.PluginLogger;
 import com.crystalrealm.ecotalereforging.util.ReforgeMetadataHelper;
-import com.ecotale.api.EcotaleAPI;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
@@ -37,16 +37,19 @@ public class ReforgeService {
     private final ReforgeConfig config;
     private final ItemValidationService validator;
     private final ReforgeDataStore dataStore;
+    private final EconomyBridge economyBridge;
 
     /** Active reforges — prevents double-click. */
     private final Set<UUID> activeReforges = ConcurrentHashMap.newKeySet();
 
     public ReforgeService(@Nonnull ReforgeConfig config,
                           @Nonnull ItemValidationService validator,
-                          @Nonnull ReforgeDataStore dataStore) {
+                          @Nonnull ReforgeDataStore dataStore,
+                          @Nonnull EconomyBridge economyBridge) {
         this.config = config;
         this.validator = validator;
         this.dataStore = dataStore;
+        this.economyBridge = economyBridge;
     }
 
     // ═══════════════════════════════════════════════════════
@@ -359,10 +362,10 @@ public class ReforgeService {
             player.getInventory().setItemInHand(ItemStack.EMPTY);
         }
 
-        // 3. Return configured % of the craft materials (rounded down, at least 1 if recipe exists)
+        // 3. Return configured % of the craft materials (rounded down, at least 1 per material if rate > 0)
         double returnRate = config.getGeneral().getFailureReturnRate();
         List<ReforgeConfig.MaterialEntry> recipe = getReverseCraftingRecipe(itemId);
-        if (recipe != null && !recipe.isEmpty()) {
+        if (returnRate > 0 && recipe != null && !recipe.isEmpty()) {
             ItemContainer container = player.getInventory().getCombinedHotbarFirst();
             for (ReforgeConfig.MaterialEntry material : recipe) {
                 int returnCount = Math.max(1, (int) (material.getCount() * returnRate));
@@ -383,6 +386,8 @@ public class ReforgeService {
                             bareMatId, e.getMessage());
                 }
             }
+        } else if (returnRate <= 0) {
+            LOGGER.info("[reforge] returnRate=0 — no materials returned to {}", playerUuid);
         }
 
         LOGGER.info("[reforge] FAIL: item {} destroyed for {}", itemId, playerUuid);
@@ -423,12 +428,12 @@ public class ReforgeService {
 
     private boolean withdrawCoins(@Nonnull UUID uuid, double amount) {
         try {
-            if (!EcotaleAPI.isAvailable()) {
-                LOGGER.debug("EcotaleAPI not available — coins check skipped");
+            if (!economyBridge.isAvailable()) {
+                LOGGER.debug("Economy not available — coins check skipped");
                 return true;
             }
-            if (!EcotaleAPI.hasBalance(uuid, amount)) return false;
-            return EcotaleAPI.withdraw(uuid, amount, "EcoTaleReforging: reforge cost");
+            if (!economyBridge.hasBalance(uuid, amount)) return false;
+            return economyBridge.withdraw(uuid, amount, "EcoTaleReforging: reforge cost");
         } catch (Exception e) {
             LOGGER.warn("Economy withdraw failed: {}", e.getMessage());
             return false;
@@ -437,8 +442,8 @@ public class ReforgeService {
 
     private void refundCoins(@Nonnull UUID uuid, double amount) {
         try {
-            if (!EcotaleAPI.isAvailable()) return;
-            EcotaleAPI.deposit(uuid, amount, "EcoTaleReforging: reforge refund");
+            if (!economyBridge.isAvailable()) return;
+            economyBridge.deposit(uuid, amount, "EcoTaleReforging: reforge refund");
         } catch (Exception e) {
             LOGGER.warn("Economy refund failed: {}", e.getMessage());
         }
@@ -480,9 +485,17 @@ public class ReforgeService {
             short slotCount = container.getCapacity();
             for (short i = 0; i < slotCount; i++) {
                 ItemStack stack = container.getItemStack(i);
-                if (stack != null && !stack.isEmpty() && itemIdMatches(stack.getItemId(), itemId)) {
-                    total += stack.getQuantity();
+                if (stack != null && !stack.isEmpty()) {
+                    String actualId = stack.getItemId();
+                    if (itemIdMatches(actualId, itemId)) {
+                        total += stack.getQuantity();
+                    } else if (config.getGeneral().isDebugMode()) {
+                        LOGGER.debug("[countInInventory] Slot {} id='{}' ≠ expected '{}'", i, actualId, itemId);
+                    }
                 }
+            }
+            if (config.getGeneral().isDebugMode()) {
+                LOGGER.debug("[countInInventory] Found {} of '{}' in {} slots", total, itemId, slotCount);
             }
         } catch (Exception e) {
             LOGGER.debug("countInInventory failed: {}", e.getMessage());
@@ -522,11 +535,11 @@ public class ReforgeService {
     }
 
     private static boolean itemIdMatches(@Nonnull String actual, @Nonnull String expected) {
-        if (actual.equals(expected)) return true;
+        if (actual.equalsIgnoreCase(expected)) return true;
         // Handle with/without namespace
         String actualName = actual.contains(":") ? actual.substring(actual.indexOf(':') + 1) : actual;
         String expectedName = expected.contains(":") ? expected.substring(expected.indexOf(':') + 1) : expected;
-        return actualName.equals(expectedName);
+        return actualName.equalsIgnoreCase(expectedName);
     }
 
     /**
@@ -704,8 +717,8 @@ public class ReforgeService {
         if (lc.getCoinCost() <= 0) return true;
 
         try {
-            if (!EcotaleAPI.isAvailable()) return true;
-            return EcotaleAPI.hasBalance(playerUuid, lc.getCoinCost());
+            if (!economyBridge.isAvailable()) return true;
+            return economyBridge.hasBalance(playerUuid, lc.getCoinCost());
         } catch (Exception e) {
             LOGGER.warn("Economy hasCoins check failed: {}", e.getMessage());
             return false;
@@ -713,24 +726,24 @@ public class ReforgeService {
     }
 
     /**
-     * Get the player's current balance from EcotaleAPI.
+     * Get the player's current balance.
      */
     public double getPlayerBalance(@Nonnull UUID playerUuid) {
         try {
-            if (!EcotaleAPI.isAvailable()) return 0;
-            return EcotaleAPI.getBalance(playerUuid);
+            if (!economyBridge.isAvailable()) return 0;
+            return economyBridge.getBalance(playerUuid);
         } catch (Exception e) {
             return 0;
         }
     }
 
     /**
-     * Format a currency amount using EcotaleAPI.
+     * Format a currency amount.
      */
     public String formatCurrency(double amount) {
         try {
-            if (!EcotaleAPI.isAvailable()) return String.format("%.0f", amount);
-            return EcotaleAPI.format(amount);
+            if (!economyBridge.isAvailable()) return String.format("%.0f", amount);
+            return economyBridge.format(amount);
         } catch (Exception e) {
             return String.format("%.0f", amount);
         }

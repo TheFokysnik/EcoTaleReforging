@@ -21,6 +21,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,11 +43,15 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
 
     private static final String KEY_ACTION = "Action";
     private static final String KEY_SLOT   = "Slot";
+    private static final String KEY_WPN_VALUE = "@WpnValue";
+    private static final String KEY_ARM_VALUE = "@ArmValue";
 
     static final BuilderCodec<AdminEventData> CODEC = ReflectiveCodecBuilder
             .<AdminEventData>create(AdminEventData.class, AdminEventData::new)
             .addStringField(KEY_ACTION, (d, v) -> d.action = v, d -> d.action)
             .addStringField(KEY_SLOT,   (d, v) -> d.slot = v,   d -> d.slot)
+            .addStringField(KEY_WPN_VALUE, (d, v) -> d.wpnValue = v, d -> d.wpnValue)
+            .addStringField(KEY_ARM_VALUE, (d, v) -> d.armValue = v, d -> d.armValue)
             .build();
 
     // ── Dependencies ────────────────────────────────────────
@@ -63,6 +68,9 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
     /** Currently viewing level in the editor. */
     private int editingLevel = 1;
 
+    /** Currently viewing material index within the editing level. */
+    private int editingMatIdx = 0;
+
     /** Currently viewing recipe index in the recipe editor. */
     private int editingRecipeIdx = 0;
 
@@ -72,14 +80,8 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
     /** Currently viewing armor pattern index. */
     private int editingArmorIdx = 0;
 
-    /** Cursor position within the currently editing weapon pattern. */
-    private int weaponCursorPos = 0;
-
-    /** Cursor position within the currently editing armor pattern. */
-    private int armorCursorPos = 0;
-
-    /** Available material types for cycling in the editor. */
-    private static final String[] MATERIAL_TYPES = {
+    /** Default material types for cycling in the editor. */
+    private static final String[] DEFAULT_MATERIAL_TYPES = {
         "Ingredient_Bar_Iron",
         "Ingredient_Bar_Cobalt",
         "Ingredient_Bar_Mithril",
@@ -87,8 +89,18 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
         "Ingredient_Bar_Onyxium"
     };
 
-    /** Charset for character-by-character pattern editing. */
-    private static final String CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_*";
+    /**
+     * Build dynamic material cycle: default materials + custom items from config.
+     */
+    private String[] getMaterialTypes() {
+        Map<String, String> custom = configManager.getConfig().getCustomItems();
+        if (custom == null || custom.isEmpty()) return DEFAULT_MATERIAL_TYPES;
+        List<String> all = new ArrayList<>(Arrays.asList(DEFAULT_MATERIAL_TYPES));
+        for (String key : custom.keySet()) {
+            if (!all.contains(key)) all.add(key);
+        }
+        return all.toArray(new String[0]);
+    }
 
     /** Predefined recipe item templates for adding new recipes. */
     private static final String[] RECIPE_ITEM_TEMPLATES = {
@@ -200,6 +212,10 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
                 new EventData().append(KEY_ACTION, "mat_count_up"));
         events.addEventBinding(CustomUIEventBindingType.Activating, "#MatCountDownBtn",
                 new EventData().append(KEY_ACTION, "mat_count_down"));
+        events.addEventBinding(CustomUIEventBindingType.Activating, "#MatAddBtn",
+                new EventData().append(KEY_ACTION, "mat_add"));
+        events.addEventBinding(CustomUIEventBindingType.Activating, "#MatRemoveBtn",
+                new EventData().append(KEY_ACTION, "mat_remove"));
 
         // Failure return rate buttons
         events.addEventBinding(CustomUIEventBindingType.Activating, "#ReturnRateUpBtn",
@@ -236,44 +252,20 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
                 new EventData().append(KEY_ACTION, "wpn_next"));
         events.addEventBinding(CustomUIEventBindingType.Activating, "#WpnRemoveBtn",
                 new EventData().append(KEY_ACTION, "wpn_remove"));
+        events.addEventBinding(CustomUIEventBindingType.Activating, "#WpnApplyBtn",
+                new EventData().append(KEY_ACTION, "wpn_apply").append(KEY_WPN_VALUE, "#WpnInput.Value"), false);
         events.addEventBinding(CustomUIEventBindingType.Activating, "#WpnAddBtn",
-                new EventData().append(KEY_ACTION, "wpn_add"));
+                new EventData().append(KEY_ACTION, "wpn_add").append(KEY_WPN_VALUE, "#WpnInput.Value"), false);
         events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmPrevBtn",
                 new EventData().append(KEY_ACTION, "arm_prev"));
         events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmNextBtn",
                 new EventData().append(KEY_ACTION, "arm_next"));
         events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmRemoveBtn",
                 new EventData().append(KEY_ACTION, "arm_remove"));
+        events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmApplyBtn",
+                new EventData().append(KEY_ACTION, "arm_apply").append(KEY_ARM_VALUE, "#ArmInput.Value"), false);
         events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmAddBtn",
-                new EventData().append(KEY_ACTION, "arm_add"));
-
-        // Weapon character editing buttons
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#WpnCurLeftBtn",
-                new EventData().append(KEY_ACTION, "wpn_cur_left"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#WpnCurRightBtn",
-                new EventData().append(KEY_ACTION, "wpn_cur_right"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#WpnCharUpBtn",
-                new EventData().append(KEY_ACTION, "wpn_char_up"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#WpnCharDownBtn",
-                new EventData().append(KEY_ACTION, "wpn_char_down"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#WpnCharInsBtn",
-                new EventData().append(KEY_ACTION, "wpn_char_ins"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#WpnCharDelBtn",
-                new EventData().append(KEY_ACTION, "wpn_char_del"));
-
-        // Armor character editing buttons
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmCurLeftBtn",
-                new EventData().append(KEY_ACTION, "arm_cur_left"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmCurRightBtn",
-                new EventData().append(KEY_ACTION, "arm_cur_right"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmCharUpBtn",
-                new EventData().append(KEY_ACTION, "arm_char_up"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmCharDownBtn",
-                new EventData().append(KEY_ACTION, "arm_char_down"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmCharInsBtn",
-                new EventData().append(KEY_ACTION, "arm_char_ins"));
-        events.addEventBinding(CustomUIEventBindingType.Activating, "#ArmCharDelBtn",
-                new EventData().append(KEY_ACTION, "arm_char_del"));
+                new EventData().append(KEY_ACTION, "arm_add").append(KEY_ARM_VALUE, "#ArmInput.Value"), false);
 
         // Recipe add/remove buttons
         events.addEventBinding(CustomUIEventBindingType.Activating, "#RecipeAddBtn",
@@ -293,6 +285,7 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
         updateAllowedItemsEditor(cmd);
         updateRecipeEditor(cmd);
         updateStats(cmd);
+        updateButtonLabels(cmd);
 
         LOGGER.info("Admin GUI built for {}", playerUuid);
     }
@@ -333,11 +326,11 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
                 refreshPage(L("gui.admin.lang_changed", "lang", next));
             }
             case "level_prev" -> {
-                if (editingLevel > 1) editingLevel--;
+                if (editingLevel > 1) { editingLevel--; editingMatIdx = 0; }
                 refreshPage(null);
             }
             case "level_next" -> {
-                if (editingLevel < config.getGeneral().getMaxReforgeLevel()) editingLevel++;
+                if (editingLevel < config.getGeneral().getMaxReforgeLevel()) { editingLevel++; editingMatIdx = 0; }
                 refreshPage(null);
             }
             case "chance_up" -> {
@@ -393,6 +386,12 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
             }
             case "mat_count_down" -> {
                 adjustMatCount(-1);
+            }
+            case "mat_add" -> {
+                addMaterial();
+            }
+            case "mat_remove" -> {
+                removeMaterial();
             }
             case "return_rate_up" -> {
                 double rate = config.getGeneral().getFailureReturnRate();
@@ -455,7 +454,10 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
                 removeAllowedPattern("weapons");
             }
             case "wpn_add" -> {
-                addAllowedPattern("weapons");
+                addAllowedPatternFromInput("weapons", data.wpnValue);
+            }
+            case "wpn_apply" -> {
+                applyAllowedPattern("weapons", data.wpnValue);
             }
             case "arm_prev" -> {
                 navigateAllowedPattern("armor", -1);
@@ -467,22 +469,11 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
                 removeAllowedPattern("armor");
             }
             case "arm_add" -> {
-                addAllowedPattern("armor");
+                addAllowedPatternFromInput("armor", data.armValue);
             }
-            // Weapon character editing
-            case "wpn_cur_left" -> { moveCursor("weapons", -1); }
-            case "wpn_cur_right" -> { moveCursor("weapons", 1); }
-            case "wpn_char_up" -> { cycleCharAt("weapons", 1); }
-            case "wpn_char_down" -> { cycleCharAt("weapons", -1); }
-            case "wpn_char_ins" -> { insertCharAt("weapons"); }
-            case "wpn_char_del" -> { deleteCharAt("weapons"); }
-            // Armor character editing
-            case "arm_cur_left" -> { moveCursor("armor", -1); }
-            case "arm_cur_right" -> { moveCursor("armor", 1); }
-            case "arm_char_up" -> { cycleCharAt("armor", 1); }
-            case "arm_char_down" -> { cycleCharAt("armor", -1); }
-            case "arm_char_ins" -> { insertCharAt("armor"); }
-            case "arm_char_del" -> { deleteCharAt("armor"); }
+            case "arm_apply" -> {
+                applyAllowedPattern("armor", data.armValue);
+            }
             case "recipe_add" -> {
                 addNewRecipe();
             }
@@ -528,23 +519,28 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
         ReforgeConfig.LevelConfig lc = config.getLevelConfig(editingLevel);
         if (lc == null) return;
 
+        String[] matTypes = getMaterialTypes();
         List<ReforgeConfig.MaterialEntry> mats = lc.getMaterials();
-        String currentId = (!mats.isEmpty()) ? mats.get(0).getItemId() : MATERIAL_TYPES[0];
-        int currentCount = (!mats.isEmpty()) ? mats.get(0).getCount() : 2;
+        if (mats.isEmpty()) {
+            mats.add(new ReforgeConfig.MaterialEntry(matTypes[0], 2));
+            editingMatIdx = 0;
+        }
+        if (editingMatIdx >= mats.size()) editingMatIdx = 0;
 
-        // Find current index in MATERIAL_TYPES
+        ReforgeConfig.MaterialEntry mat = mats.get(editingMatIdx);
+        String currentId = mat.getItemId();
+
+        // Find current index in material types
         int idx = 0;
-        for (int i = 0; i < MATERIAL_TYPES.length; i++) {
-            if (MATERIAL_TYPES[i].equals(currentId) || stripNs(MATERIAL_TYPES[i]).equals(stripNs(currentId))) {
+        for (int i = 0; i < matTypes.length; i++) {
+            if (matTypes[i].equals(currentId) || stripNs(matTypes[i]).equals(stripNs(currentId))) {
                 idx = i;
                 break;
             }
         }
 
-        idx = (idx + direction + MATERIAL_TYPES.length) % MATERIAL_TYPES.length;
-
-        mats.clear();
-        mats.add(new ReforgeConfig.MaterialEntry(MATERIAL_TYPES[idx], currentCount));
+        idx = (idx + direction + matTypes.length) % matTypes.length;
+        mat.setItemId(matTypes[idx]);
         configManager.saveConfig();
         refreshPage(null);
     }
@@ -556,12 +552,53 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
 
         List<ReforgeConfig.MaterialEntry> mats = lc.getMaterials();
         if (mats.isEmpty()) {
-            mats.add(new ReforgeConfig.MaterialEntry(MATERIAL_TYPES[0], 2));
+            mats.add(new ReforgeConfig.MaterialEntry(getMaterialTypes()[0], 2));
+            editingMatIdx = 0;
         }
+        if (editingMatIdx >= mats.size()) editingMatIdx = 0;
 
-        ReforgeConfig.MaterialEntry mat = mats.get(0);
+        ReforgeConfig.MaterialEntry mat = mats.get(editingMatIdx);
         int newCount = Math.max(1, mat.getCount() + delta);
         mat.setCount(newCount);
+        configManager.saveConfig();
+        refreshPage(null);
+    }
+
+    private void addMaterial() {
+        ReforgeConfig config = configManager.getConfig();
+        ReforgeConfig.LevelConfig lc = config.getLevelConfig(editingLevel);
+        if (lc == null) return;
+
+        List<ReforgeConfig.MaterialEntry> mats = lc.getMaterials();
+        // Pick a material type not yet in the list, or default to first
+        String[] matTypes = getMaterialTypes();
+        String newMatId = matTypes[0];
+        for (String type : matTypes) {
+            boolean used = false;
+            for (ReforgeConfig.MaterialEntry m : mats) {
+                if (type.equals(m.getItemId()) || stripNs(type).equals(stripNs(m.getItemId()))) {
+                    used = true;
+                    break;
+                }
+            }
+            if (!used) { newMatId = type; break; }
+        }
+        mats.add(new ReforgeConfig.MaterialEntry(newMatId, 2));
+        editingMatIdx = mats.size() - 1;
+        configManager.saveConfig();
+        refreshPage(null);
+    }
+
+    private void removeMaterial() {
+        ReforgeConfig config = configManager.getConfig();
+        ReforgeConfig.LevelConfig lc = config.getLevelConfig(editingLevel);
+        if (lc == null) return;
+
+        List<ReforgeConfig.MaterialEntry> mats = lc.getMaterials();
+        if (mats.size() <= 1) return; // Keep at least 1 material
+        if (editingMatIdx >= mats.size()) editingMatIdx = 0;
+        mats.remove(editingMatIdx);
+        if (editingMatIdx >= mats.size()) editingMatIdx = mats.size() - 1;
         configManager.saveConfig();
         refreshPage(null);
     }
@@ -595,15 +632,16 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
 
         ReforgeConfig.MaterialEntry mat = mats.get(0);
         String currentId = mat.getItemId();
+        String[] matTypes = getMaterialTypes();
         int idx = 0;
-        for (int i = 0; i < MATERIAL_TYPES.length; i++) {
-            if (MATERIAL_TYPES[i].equals(currentId) || stripNs(MATERIAL_TYPES[i]).equals(stripNs(currentId))) {
+        for (int i = 0; i < matTypes.length; i++) {
+            if (matTypes[i].equals(currentId) || stripNs(matTypes[i]).equals(stripNs(currentId))) {
                 idx = i;
                 break;
             }
         }
-        idx = (idx + direction + MATERIAL_TYPES.length) % MATERIAL_TYPES.length;
-        mat.setItemId(MATERIAL_TYPES[idx]);
+        idx = (idx + direction + matTypes.length) % matTypes.length;
+        mat.setItemId(matTypes[idx]);
         configManager.saveConfig();
         refreshPage(null);
     }
@@ -625,136 +663,84 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
 
     // ── Allowed items helpers ──────────────────────────────
 
-    private void navigateAllowedPattern(String type, int direction) {
+    private List<String> getPatternList(String type) {
         ReforgeConfig.AllowedItems allowed = configManager.getConfig().getAllowedItems();
-        if ("weapons".equals(type)) {
-            List<String> list = allowed.getWeapons();
-            if (!list.isEmpty()) {
-                editingWeaponIdx = (editingWeaponIdx + direction + list.size()) % list.size();
-            }
-            weaponCursorPos = 0;
-        } else {
-            List<String> list = allowed.getArmor();
-            if (!list.isEmpty()) {
-                editingArmorIdx = (editingArmorIdx + direction + list.size()) % list.size();
-            }
-            armorCursorPos = 0;
+        return switch (type) {
+            case "weapons" -> allowed.getWeapons();
+            case "armor" -> allowed.getArmor();
+            default -> allowed.getWeapons();
+        };
+    }
+
+    private int getPatternIdx(String type) {
+        return switch (type) {
+            case "weapons" -> editingWeaponIdx;
+            case "armor" -> editingArmorIdx;
+            default -> 0;
+        };
+    }
+
+    private void setPatternIdx(String type, int idx) {
+        switch (type) {
+            case "weapons" -> editingWeaponIdx = idx;
+            case "armor" -> editingArmorIdx = idx;
+        }
+    }
+
+    private void navigateAllowedPattern(String type, int direction) {
+        List<String> list = getPatternList(type);
+        if (!list.isEmpty()) {
+            int idx = getPatternIdx(type);
+            setPatternIdx(type, (idx + direction + list.size()) % list.size());
         }
         refreshPage(null);
     }
 
     private void removeAllowedPattern(String type) {
-        ReforgeConfig.AllowedItems allowed = configManager.getConfig().getAllowedItems();
-        if ("weapons".equals(type)) {
-            List<String> list = allowed.getWeapons();
-            if (!list.isEmpty() && editingWeaponIdx < list.size()) {
-                list.remove(editingWeaponIdx);
-                if (editingWeaponIdx >= list.size() && editingWeaponIdx > 0) editingWeaponIdx--;
-            }
-        } else {
-            List<String> list = allowed.getArmor();
-            if (!list.isEmpty() && editingArmorIdx < list.size()) {
-                list.remove(editingArmorIdx);
-                if (editingArmorIdx >= list.size() && editingArmorIdx > 0) editingArmorIdx--;
-            }
+        List<String> list = getPatternList(type);
+        int idx = getPatternIdx(type);
+        if (!list.isEmpty() && idx < list.size()) {
+            list.remove(idx);
+            if (idx >= list.size() && idx > 0) setPatternIdx(type, idx - 1);
         }
         configManager.saveConfig();
         refreshPage(null);
     }
 
-    private void addAllowedPattern(String type) {
-        ReforgeConfig.AllowedItems allowed = configManager.getConfig().getAllowedItems();
-        List<String> list = "weapons".equals(type) ? allowed.getWeapons() : allowed.getArmor();
+    /**
+     * Add a new pattern from the TextField value.
+     * If the input is empty, adds a default "New_*".
+     */
+    private void addAllowedPatternFromInput(String type, String value) {
+        List<String> list = getPatternList(type);
+        String trimmed = (value == null) ? "" : value.trim();
+        String pattern = trimmed.isEmpty() ? "New_*" : trimmed;
+        list.add(pattern);
+        setPatternIdx(type, list.size() - 1);
+        configManager.saveConfig();
+        refreshPage(L("gui.admin.pattern_added", "pattern", pattern));
+    }
 
-        list.add("New_*");
-        if ("weapons".equals(type)) {
-            editingWeaponIdx = list.size() - 1;
-            weaponCursorPos = 0;
+    /**
+     * Replace the currently selected pattern with TextField value.
+     */
+    private void applyAllowedPattern(String type, String value) {
+        List<String> list = getPatternList(type);
+        int idx = getPatternIdx(type);
+        String trimmed = (value == null) ? "" : value.trim();
+        if (trimmed.isEmpty()) {
+            refreshPage(L("gui.admin.pattern_empty"));
+            return;
+        }
+        if (list.isEmpty()) {
+            list.add(trimmed);
+            setPatternIdx(type, 0);
         } else {
-            editingArmorIdx = list.size() - 1;
-            armorCursorPos = 0;
+            if (idx >= list.size()) idx = 0;
+            list.set(idx, trimmed);
         }
         configManager.saveConfig();
-        refreshPage(null);
-    }
-
-    // ── Character-by-character pattern editing ─────────────
-
-    private void moveCursor(String type, int direction) {
-        ReforgeConfig.AllowedItems allowed = configManager.getConfig().getAllowedItems();
-        List<String> list = "weapons".equals(type) ? allowed.getWeapons() : allowed.getArmor();
-        int idx = "weapons".equals(type) ? editingWeaponIdx : editingArmorIdx;
-        if (list.isEmpty() || idx >= list.size()) return;
-
-        String pattern = list.get(idx);
-        if ("weapons".equals(type)) {
-            weaponCursorPos = Math.max(0, Math.min(pattern.length() - 1, weaponCursorPos + direction));
-        } else {
-            armorCursorPos = Math.max(0, Math.min(pattern.length() - 1, armorCursorPos + direction));
-        }
-        refreshPage(null);
-    }
-
-    private void cycleCharAt(String type, int direction) {
-        ReforgeConfig.AllowedItems allowed = configManager.getConfig().getAllowedItems();
-        List<String> list = "weapons".equals(type) ? allowed.getWeapons() : allowed.getArmor();
-        int idx = "weapons".equals(type) ? editingWeaponIdx : editingArmorIdx;
-        int cursorPos = "weapons".equals(type) ? weaponCursorPos : armorCursorPos;
-        if (list.isEmpty() || idx >= list.size()) return;
-
-        String pattern = list.get(idx);
-        if (cursorPos >= pattern.length()) return;
-
-        char current = pattern.charAt(cursorPos);
-        int charIdx = CHARSET.indexOf(current);
-        if (charIdx < 0) charIdx = 0;
-        charIdx = (charIdx + direction + CHARSET.length()) % CHARSET.length();
-
-        StringBuilder sb = new StringBuilder(pattern);
-        sb.setCharAt(cursorPos, CHARSET.charAt(charIdx));
-        list.set(idx, sb.toString());
-        configManager.saveConfig();
-        refreshPage(null);
-    }
-
-    private void insertCharAt(String type) {
-        ReforgeConfig.AllowedItems allowed = configManager.getConfig().getAllowedItems();
-        List<String> list = "weapons".equals(type) ? allowed.getWeapons() : allowed.getArmor();
-        int idx = "weapons".equals(type) ? editingWeaponIdx : editingArmorIdx;
-        int cursorPos = "weapons".equals(type) ? weaponCursorPos : armorCursorPos;
-        if (list.isEmpty() || idx >= list.size()) return;
-
-        String pattern = list.get(idx);
-        StringBuilder sb = new StringBuilder(pattern);
-        sb.insert(cursorPos, 'A');
-        list.set(idx, sb.toString());
-        configManager.saveConfig();
-        refreshPage(null);
-    }
-
-    private void deleteCharAt(String type) {
-        ReforgeConfig.AllowedItems allowed = configManager.getConfig().getAllowedItems();
-        List<String> list = "weapons".equals(type) ? allowed.getWeapons() : allowed.getArmor();
-        int idx = "weapons".equals(type) ? editingWeaponIdx : editingArmorIdx;
-        int cursorPos = "weapons".equals(type) ? weaponCursorPos : armorCursorPos;
-        if (list.isEmpty() || idx >= list.size()) return;
-
-        String pattern = list.get(idx);
-        if (pattern.length() <= 1) return; // Keep at least 1 char
-        if (cursorPos >= pattern.length()) return;
-
-        StringBuilder sb = new StringBuilder(pattern);
-        sb.deleteCharAt(cursorPos);
-        list.set(idx, sb.toString());
-
-        // Adjust cursor if past end
-        if ("weapons".equals(type)) {
-            if (weaponCursorPos >= sb.length()) weaponCursorPos = sb.length() - 1;
-        } else {
-            if (armorCursorPos >= sb.length()) armorCursorPos = sb.length() - 1;
-        }
-        configManager.saveConfig();
-        refreshPage(null);
+        refreshPage(L("gui.admin.pattern_applied", "pattern", trimmed));
     }
 
     private void addNewRecipe() {
@@ -770,7 +756,7 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
         if (newKey == null) newKey = "Custom_Item_" + (recipes.size() + 1);
 
         List<ReforgeConfig.MaterialEntry> mats = new ArrayList<>();
-        mats.add(new ReforgeConfig.MaterialEntry(MATERIAL_TYPES[0], 10));
+        mats.add(new ReforgeConfig.MaterialEntry(getMaterialTypes()[0], 10));
         recipes.put(newKey, mats);
 
         List<String> keys = getRecipeKeys();
@@ -839,21 +825,30 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
             cmd.set("#DefBonusLabel.Text", L("gui.admin.def_bonus"));
             cmd.set("#DefValue.Text", MessageUtil.formatBonus(lc.getArmorDefenseBonus()));
 
-            // Materials with icon
+            // Materials with icon — navigate through multiple materials
             cmd.set("#MaterialsLabel.Text", L("gui.admin.materials"));
             if (!lc.getMaterials().isEmpty()) {
-                ReforgeConfig.MaterialEntry mat = lc.getMaterials().get(0);
+                if (editingMatIdx >= lc.getMaterials().size()) editingMatIdx = 0;
+                ReforgeConfig.MaterialEntry mat = lc.getMaterials().get(editingMatIdx);
                 String matId = mat.getItemId();
                 String iconId = stripNs(matId);
-                // Pretty name: "Ingredient_Bar_Iron" → "Iron Bar"
-                String prettyName = iconId.replace("Ingredient_Bar_", "").replace("_", " ") + " Bar";
+                // Use custom item name if available, otherwise generate from ID
+                String customName = configManager.getConfig().getCustomItemName(iconId);
+                String prettyName;
+                if (customName != null && !customName.isEmpty()) {
+                    prettyName = customName;
+                } else {
+                    prettyName = iconId.replace("Ingredient_Bar_", "").replace("_", " ") + " Bar";
+                }
                 cmd.set("#MatEditIcon.ItemId", iconId);
                 cmd.set("#MaterialsValue.Text", prettyName);
                 cmd.set("#MatCountValue.Text", String.valueOf(mat.getCount()));
+                cmd.set("#MatIdxLabel.Text", (editingMatIdx + 1) + "/" + lc.getMaterials().size());
             } else {
                 cmd.set("#MatEditIcon.ItemId", "");
                 cmd.set("#MaterialsValue.Text", "—");
                 cmd.set("#MatCountValue.Text", "0");
+                cmd.set("#MatIdxLabel.Text", "0/0");
             }
         }
     }
@@ -869,28 +864,11 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
         if (!weapons.isEmpty()) {
             if (editingWeaponIdx >= weapons.size()) editingWeaponIdx = 0;
             String pattern = weapons.get(editingWeaponIdx);
-            if (weaponCursorPos >= pattern.length()) weaponCursorPos = Math.max(0, pattern.length() - 1);
-
-            // Show pattern with cursor brackets: "Cus[t]om_*"
-            StringBuilder display = new StringBuilder();
-            for (int i = 0; i < pattern.length(); i++) {
-                if (i == weaponCursorPos) {
-                    display.append('[').append(pattern.charAt(i)).append(']');
-                } else {
-                    display.append(pattern.charAt(i));
-                }
-            }
-            cmd.set("#WpnPatternLabel.Text", display.toString());
+            cmd.set("#WpnPatternLabel.Text", pattern);
             cmd.set("#WpnCountLabel.Text", (editingWeaponIdx + 1) + "/" + weapons.size());
-
-            // Edit row
-            cmd.set("#WpnPosLabel.Text", (weaponCursorPos + 1) + "/" + pattern.length());
-            cmd.set("#WpnCharLabel.Text", String.valueOf(pattern.charAt(weaponCursorPos)));
         } else {
             cmd.set("#WpnPatternLabel.Text", "\u2014");
             cmd.set("#WpnCountLabel.Text", "0/0");
-            cmd.set("#WpnPosLabel.Text", "—");
-            cmd.set("#WpnCharLabel.Text", "—");
         }
 
         // Armor
@@ -899,28 +877,11 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
         if (!armor.isEmpty()) {
             if (editingArmorIdx >= armor.size()) editingArmorIdx = 0;
             String pattern = armor.get(editingArmorIdx);
-            if (armorCursorPos >= pattern.length()) armorCursorPos = Math.max(0, pattern.length() - 1);
-
-            // Show pattern with cursor brackets
-            StringBuilder display = new StringBuilder();
-            for (int i = 0; i < pattern.length(); i++) {
-                if (i == armorCursorPos) {
-                    display.append('[').append(pattern.charAt(i)).append(']');
-                } else {
-                    display.append(pattern.charAt(i));
-                }
-            }
-            cmd.set("#ArmPatternLabel.Text", display.toString());
+            cmd.set("#ArmPatternLabel.Text", pattern);
             cmd.set("#ArmCountLabel.Text", (editingArmorIdx + 1) + "/" + armor.size());
-
-            // Edit row
-            cmd.set("#ArmPosLabel.Text", (armorCursorPos + 1) + "/" + pattern.length());
-            cmd.set("#ArmCharLabel.Text", String.valueOf(pattern.charAt(armorCursorPos)));
         } else {
             cmd.set("#ArmPatternLabel.Text", "\u2014");
             cmd.set("#ArmCountLabel.Text", "0/0");
-            cmd.set("#ArmPosLabel.Text", "—");
-            cmd.set("#ArmCharLabel.Text", "—");
         }
     }
 
@@ -948,7 +909,14 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
             ReforgeConfig.MaterialEntry mat = mats.get(0);
             String matId = mat.getItemId();
             String iconId = stripNs(matId);
-            String prettyName = iconId.replace("Ingredient_Bar_", "").replace("_", " ") + " Bar";
+            // Use custom item name if available, otherwise generate from ID
+            String customName = configManager.getConfig().getCustomItemName(iconId);
+            String prettyName;
+            if (customName != null && !customName.isEmpty()) {
+                prettyName = customName;
+            } else {
+                prettyName = iconId.replace("Ingredient_Bar_", "").replace("_", " ") + " Bar";
+            }
             cmd.set("#RecipeMatIcon.ItemId", iconId);
             cmd.set("#RecipeMatName.Text", prettyName);
             cmd.set("#RecipeCountValue.Text", String.valueOf(mat.getCount()));
@@ -969,6 +937,22 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
         cmd.set("#TotalLevelsValue.Text", String.valueOf(config.getLevels().size()));
     }
 
+    private void updateButtonLabels(@Nonnull UICommandBuilder cmd) {
+        String toggle = L("gui.admin.btn.toggle");
+        cmd.set("#DebugToggleBtn.Text", toggle);
+        cmd.set("#LangToggleBtn.Text", toggle);
+        cmd.set("#ProtectionToggleBtn.Text", toggle);
+        cmd.set("#ReloadBtn.Text", L("gui.admin.btn.reload"));
+        cmd.set("#SaveBtn.Text", L("gui.admin.btn.save"));
+        String apply = L("gui.admin.btn.apply");
+        cmd.set("#WpnApplyBtn.Text", apply);
+        cmd.set("#ArmApplyBtn.Text", apply);
+        String addBtn = L("gui.admin.btn.add");
+        cmd.set("#WpnAddBtn.Text", addBtn);
+        cmd.set("#ArmAddBtn.Text", addBtn);
+        cmd.set("#RecipeMatLabel.Text", L("gui.admin.returns"));
+    }
+
     // ════════════════════════════════════════════════════════
     //  REFRESH
     // ════════════════════════════════════════════════════════
@@ -987,6 +971,7 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
             updateAllowedItemsEditor(cmd);
             updateRecipeEditor(cmd);
             updateStats(cmd);
+            updateButtonLabels(cmd);
 
             sendUpdate(cmd);
         } catch (Exception e) {
@@ -1038,5 +1023,7 @@ public final class AdminReforgeGui extends InteractiveCustomUIPage<AdminReforgeG
     public static class AdminEventData {
         public String action = "";
         public String slot = "";
+        public String wpnValue = "";
+        public String armValue = "";
     }
 }

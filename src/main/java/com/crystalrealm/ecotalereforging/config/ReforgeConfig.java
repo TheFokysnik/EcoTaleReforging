@@ -12,6 +12,7 @@ public class ReforgeConfig {
     private Map<String, LevelConfig> levels = new LinkedHashMap<>();
     private AllowedItems allowedItems = new AllowedItems();
     private Map<String, List<MaterialEntry>> reverseRecipes = new LinkedHashMap<>();
+    private Map<String, String> customItems = new LinkedHashMap<>();
 
     public ReforgeConfig() {
         // Defaults: 10 levels with progressive difficulty
@@ -42,6 +43,30 @@ public class ReforgeConfig {
     public Map<String, List<MaterialEntry>> getReverseRecipes() { return reverseRecipes; }
     public void setReverseRecipes(Map<String, List<MaterialEntry>> reverseRecipes) { this.reverseRecipes = reverseRecipes; }
 
+    /** Custom items map: itemId → display name. Keys are added to admin material cycle. */
+    public Map<String, String> getCustomItems() { return customItems; }
+    public void setCustomItems(Map<String, String> customItems) { this.customItems = customItems; }
+
+    /** Get display name for a custom item, or null if not registered. */
+    public String getCustomItemName(String itemId) {
+        if (customItems == null || itemId == null) return null;
+        // Direct lookup first (fast path)
+        String name = customItems.get(itemId);
+        if (name != null) return name;
+        // Try without namespace
+        String bare = itemId.contains(":") ? itemId.substring(itemId.indexOf(':') + 1) : itemId;
+        name = customItems.get(bare);
+        if (name != null) return name;
+        // Case-insensitive fallback — handles modded items with case differences
+        for (Map.Entry<String, String> entry : customItems.entrySet()) {
+            String key = entry.getKey();
+            if (key.equalsIgnoreCase(itemId) || key.equalsIgnoreCase(bare)) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
     /**
      * Copy all fields from another config into this instance.
      * Keeps this object reference alive so services that hold it see updates.
@@ -51,6 +76,7 @@ public class ReforgeConfig {
         this.levels = other.levels;
         this.allowedItems = other.allowedItems;
         this.reverseRecipes = other.reverseRecipes;
+        this.customItems = other.customItems;
     }
 
     /**
@@ -88,9 +114,13 @@ public class ReforgeConfig {
         private double failureReturnRate = 0.30;
         private boolean protectionEnabled = true;
         private double protectionCostMultiplier = 2.0;
+        private String economyProvider = "ecotale";
 
         public String getLanguage() { return language; }
         public void setLanguage(String language) { this.language = language; }
+
+        public String getEconomyProvider() { return economyProvider; }
+        public void setEconomyProvider(String economyProvider) { this.economyProvider = economyProvider; }
 
         public String getMessagePrefix() { return messagePrefix; }
         public void setMessagePrefix(String messagePrefix) { this.messagePrefix = messagePrefix; }
@@ -157,6 +187,7 @@ public class ReforgeConfig {
                 "Weapon_*"));
         private List<String> armor = new ArrayList<>(List.of(
                 "Armor_*"));
+        private List<String> excluded = new ArrayList<>();
 
         public List<String> getWeapons() { return weapons; }
         public void setWeapons(List<String> weapons) { this.weapons = weapons; }
@@ -164,10 +195,14 @@ public class ReforgeConfig {
         public List<String> getArmor() { return armor; }
         public void setArmor(List<String> armor) { this.armor = armor; }
 
-        /** Check if an item ID matches any allowed weapon or armor pattern. */
+        public List<String> getExcluded() { return excluded; }
+        public void setExcluded(List<String> excluded) { this.excluded = excluded; }
+
+        /** Check if an item ID matches any allowed weapon or armor pattern and is not excluded. */
         public boolean isAllowed(String itemId) {
             if (itemId == null) return false;
             String name = extractName(itemId);
+            if (isExcluded(name)) return false;
             for (String pattern : weapons) {
                 if (matchesWildcard(name, pattern)) return true;
             }
@@ -177,21 +212,31 @@ public class ReforgeConfig {
             return false;
         }
 
-        /** Check if an item is specifically a weapon. */
+        /** Check if an item is specifically a weapon (and not excluded). */
         public boolean isWeapon(String itemId) {
             if (itemId == null) return false;
             String name = extractName(itemId);
+            if (isExcluded(name)) return false;
             for (String pattern : weapons) {
                 if (matchesWildcard(name, pattern)) return true;
             }
             return false;
         }
 
-        /** Check if an item is specifically armor. */
+        /** Check if an item is specifically armor (and not excluded). */
         public boolean isArmor(String itemId) {
             if (itemId == null) return false;
             String name = extractName(itemId);
+            if (isExcluded(name)) return false;
             for (String pattern : armor) {
+                if (matchesWildcard(name, pattern)) return true;
+            }
+            return false;
+        }
+
+        /** Check if an item matches any exclusion pattern. */
+        private boolean isExcluded(String name) {
+            for (String pattern : excluded) {
                 if (matchesWildcard(name, pattern)) return true;
             }
             return false;
@@ -204,13 +249,22 @@ public class ReforgeConfig {
             return fullId;
         }
 
+        /**
+         * Match item name against pattern.
+         * <ul>
+         *   <li>{@code "*"} — matches everything</li>
+         *   <li>{@code "Armor_*"} — prefix match (strip trailing {@code *})</li>
+         *   <li>{@code "Armor"} — exact OR prefix match (treats as implicit prefix)</li>
+         * </ul>
+         * This allows configs like {@code "Armor"} to match {@code "Armor_Cuirass_Sapphire"}
+         * without requiring an explicit {@code *} wildcard.
+         */
         private static boolean matchesWildcard(String name, String pattern) {
             if (pattern.equals("*")) return true;
-            if (pattern.endsWith("*")) {
-                String prefix = pattern.substring(0, pattern.length() - 1);
-                return name.startsWith(prefix);
-            }
-            return name.equals(pattern);
+            String prefix = pattern.endsWith("*")
+                    ? pattern.substring(0, pattern.length() - 1)
+                    : pattern;
+            return name.startsWith(prefix);
         }
     }
 }

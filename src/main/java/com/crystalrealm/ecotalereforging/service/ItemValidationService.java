@@ -105,7 +105,24 @@ public class ItemValidationService {
         else if (name.startsWith("Armor_")) name = name.substring("Armor_".length());
         name = name.replace('_', ' ');
         if (name.isEmpty()) name = itemId;
-        return name;
+        // Title Case: "skull skeleton epic" → "Skull Skeleton Epic"
+        return toTitleCase(name);
+    }
+
+    /** Convert space-separated string to Title Case. */
+    private static String toTitleCase(String input) {
+        if (input == null || input.isEmpty()) return input;
+        String[] words = input.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < words.length; i++) {
+            if (i > 0) sb.append(' ');
+            String w = words[i];
+            if (!w.isEmpty()) {
+                sb.append(Character.toUpperCase(w.charAt(0)));
+                if (w.length() > 1) sb.append(w.substring(1));
+            }
+        }
+        return sb.toString();
     }
 
     /**

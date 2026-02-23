@@ -640,6 +640,12 @@ public final class ReforgeGui extends InteractiveCustomUIPage<ReforgeGui.Reforge
             return fullTranslation;
         }
 
+        // 2. Check customItems map in config
+        String customName = config.getCustomItemName(itemId);
+        if (customName != null && !customName.isEmpty()) {
+            return customName;
+        }
+
         String type = null;
         String material = null;
 
@@ -676,8 +682,8 @@ public final class ReforgeGui extends InteractiveCustomUIPage<ReforgeGui.Reforge
                     return localMat + " " + localType;
                 }
             }
-            // Fallback
-            return itemId.replace('_', ' ');
+            // Fallback — Title Case: "Skull_Skeleton_epic" → "Skull Skeleton Epic"
+            return toTitleCase(itemId.replace('_', ' '));
         }
 
         String typeKey = "item.type." + type;
@@ -715,6 +721,25 @@ public final class ReforgeGui extends InteractiveCustomUIPage<ReforgeGui.Reforge
                 sb.append(' ').append(c);
             } else {
                 sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Convert a space-separated string to Title Case.
+     * E.g. "skull skeleton epic" → "Skull Skeleton Epic"
+     */
+    private static String toTitleCase(String input) {
+        if (input == null || input.isEmpty()) return input;
+        String[] words = input.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < words.length; i++) {
+            if (i > 0) sb.append(' ');
+            String w = words[i];
+            if (!w.isEmpty()) {
+                sb.append(Character.toUpperCase(w.charAt(0)));
+                if (w.length() > 1) sb.append(w.substring(1));
             }
         }
         return sb.toString();

@@ -22,10 +22,8 @@
     ],
     "VariantRotation": "NESW",
     "HitboxType": "EcoTale_Reforge_Station",
-    "Interactions": {
-      "Use": {
-        "Interactions": []
-      }
+    "Flags": {
+      "IsUsable": true
     },
     "BlockParticleSetId": "Stone",
     "ParticleColor": "#5C583E",
@@ -36,7 +34,16 @@
         }
       ]
     },
-    "BlockSoundSetId": "Stone"
+    "BlockSoundSetId": "Stone",
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "Simple"
+          }
+        ]
+      }
+    }
   },
   "IconProperties": {
     "Scale": 0.37,

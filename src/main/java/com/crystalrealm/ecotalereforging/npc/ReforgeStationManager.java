@@ -7,6 +7,7 @@ import com.crystalrealm.ecotalereforging.lang.LangManager;
 import com.crystalrealm.ecotalereforging.service.ItemValidationService;
 import com.crystalrealm.ecotalereforging.service.ReforgeService;
 import com.crystalrealm.ecotalereforging.service.WeaponStatsService;
+import com.crystalrealm.ecotalereforging.util.PermissionHelper;
 import com.crystalrealm.ecotalereforging.util.PluginLogger;
 
 import com.hypixel.hytale.component.ArchetypeChunk;
@@ -225,6 +226,19 @@ public class ReforgeStationManager {
 
                 UUID playerUuid = playerRef.getUuid();
                 if (playerUuid == null) return;
+
+                // Permission check — ecotalereforging.use
+                if (!PermissionHelper.getInstance().hasPermission(playerUuid, "ecotalereforging.use")) {
+                    LOGGER.debug("Player {} denied Reforge Station — missing ecotalereforging.use", playerUuid);
+                    Player player = onlinePlayersByUuid.get(playerUuid);
+                    if (player != null) {
+                        try {
+                            String noPermMsg = langManager.getForPlayer(playerUuid, "cmd.no_permission");
+                            player.sendMessage(noPermMsg);
+                        } catch (Exception ignored) {}
+                    }
+                    return;
+                }
 
                 // Cooldown
                 long now = System.currentTimeMillis();

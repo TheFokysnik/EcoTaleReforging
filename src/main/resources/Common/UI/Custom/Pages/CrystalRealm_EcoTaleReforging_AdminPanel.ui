@@ -387,12 +387,17 @@ $C.@PageOverlay {
             ItemIcon #MatEditIcon { Anchor: (Width: 26, Height: 26); }
             Group { Anchor: (Width: 6); }
             TextButton #MatPrevBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "<"; }
-            Label #MaterialsValue { Style: (...@MaterialsText, HorizontalAlignment: Center, VerticalAlignment: Center); Anchor: (Width: 180, Height: 22); Text: ""; }
+            Label #MaterialsValue { Style: (...@MaterialsText, HorizontalAlignment: Center, VerticalAlignment: Center); Anchor: (Width: 150, Height: 22); Text: ""; }
             TextButton #MatNextBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: ">"; }
-            Group { Anchor: (Width: 10); }
+            Group { Anchor: (Width: 6); }
             TextButton #MatCountDownBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "-"; }
             Label #MatCountValue { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 40, Height: 22); Text: "2"; }
             TextButton #MatCountUpBtn { Anchor: (Width: 30, Height: 22); Style: @SmBtnStyle; Text: "+"; }
+            Group { Anchor: (Width: 8); }
+            TextButton #MatRemoveBtn { Anchor: (Width: 28, Height: 22); Style: @RemoveBtnStyle; Text: "X"; }
+            TextButton #MatAddBtn { Anchor: (Width: 28, Height: 22); Style: @AddBtnStyle; Text: "+"; }
+            Group { Anchor: (Width: 6); }
+            Label #MatIdxLabel { Style: @SmGray; Anchor: (Width: 40, Height: 22); Text: "1/1"; }
           }
         }
       }
@@ -410,7 +415,7 @@ $C.@PageOverlay {
         Background: (Color: #111a2e(0.9));
         Padding: (Left: 16, Right: 16, Top: 10, Bottom: 10);
 
-        // Weapons patterns row
+        // Weapons — current pattern display + nav
         Group #WeaponPatternRow {
           Anchor: (Height: 28);
           LayoutMode: Left;
@@ -420,34 +425,27 @@ $C.@PageOverlay {
           TextButton #WpnNextBtn { Anchor: (Width: 26, Height: 22); Style: @SmBtnStyle; Text: ">"; }
           Group { Anchor: (Width: 8); }
           TextButton #WpnRemoveBtn { Anchor: (Width: 28, Height: 22); Style: @RemoveBtnStyle; Text: "X"; }
-          TextButton #WpnAddBtn { Anchor: (Width: 28, Height: 22); Style: @AddBtnStyle; Text: "+"; }
           Group { Anchor: (Width: 6); }
           Label #WpnCountLabel { Style: @SmGray; Anchor: (Width: 40, Height: 22); Text: "1/1"; }
         }
 
         Group { Anchor: (Height: 4); }
 
-        // Weapon character editor row
-        Group #WeaponEditRow {
-          Anchor: (Height: 26);
+        // Weapons — text input for adding / editing patterns
+        Group #WeaponInputRow {
+          Anchor: (Height: 28);
           LayoutMode: Left;
           Group { Anchor: (Width: 80); }
-          TextButton #WpnCurLeftBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "<"; }
-          TextButton #WpnCurRightBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: ">"; }
+          $C.@TextField #WpnInput { Anchor: (Width: 300, Height: 26); PlaceholderText: "Weapon_Sword_*"; }
           Group { Anchor: (Width: 6); }
-          Label #WpnPosLabel { Style: @SmGray; Anchor: (Width: 60, Height: 22); Text: "1/1"; }
-          Group { Anchor: (Width: 6); }
-          TextButton #WpnCharDownBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "v"; }
-          Label #WpnCharLabel { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 28, Height: 22); Text: "A"; }
-          TextButton #WpnCharUpBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "^"; }
-          Group { Anchor: (Width: 8); }
-          TextButton #WpnCharInsBtn { Anchor: (Width: 28, Height: 22); Style: @AddBtnStyle; Text: "+"; }
-          TextButton #WpnCharDelBtn { Anchor: (Width: 28, Height: 22); Style: @RemoveBtnStyle; Text: "-"; }
+          TextButton #WpnApplyBtn { Anchor: (Width: 80, Height: 24); Style: @SaveBtnStyle; Text: "Apply"; }
+          Group { Anchor: (Width: 4); }
+          TextButton #WpnAddBtn { Anchor: (Width: 80, Height: 24); Style: @AddBtnStyle; Text: "+ Add"; }
         }
 
         Group { Anchor: (Height: 8); }
 
-        // Armor patterns row
+        // Armor — current pattern display + nav
         Group #ArmorPatternRow {
           Anchor: (Height: 28);
           LayoutMode: Left;
@@ -457,29 +455,22 @@ $C.@PageOverlay {
           TextButton #ArmNextBtn { Anchor: (Width: 26, Height: 22); Style: @SmBtnStyle; Text: ">"; }
           Group { Anchor: (Width: 8); }
           TextButton #ArmRemoveBtn { Anchor: (Width: 28, Height: 22); Style: @RemoveBtnStyle; Text: "X"; }
-          TextButton #ArmAddBtn { Anchor: (Width: 28, Height: 22); Style: @AddBtnStyle; Text: "+"; }
           Group { Anchor: (Width: 6); }
           Label #ArmCountLabel { Style: @SmGray; Anchor: (Width: 40, Height: 22); Text: "1/1"; }
         }
 
         Group { Anchor: (Height: 4); }
 
-        // Armor character editor row
-        Group #ArmorEditRow {
-          Anchor: (Height: 26);
+        // Armor — text input for adding / editing patterns
+        Group #ArmorInputRow {
+          Anchor: (Height: 28);
           LayoutMode: Left;
           Group { Anchor: (Width: 80); }
-          TextButton #ArmCurLeftBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "<"; }
-          TextButton #ArmCurRightBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: ">"; }
+          $C.@TextField #ArmInput { Anchor: (Width: 300, Height: 26); PlaceholderText: "Armor_Iron_*"; }
           Group { Anchor: (Width: 6); }
-          Label #ArmPosLabel { Style: @SmGray; Anchor: (Width: 60, Height: 22); Text: "1/1"; }
-          Group { Anchor: (Width: 6); }
-          TextButton #ArmCharDownBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "v"; }
-          Label #ArmCharLabel { Style: (...@FieldValue, HorizontalAlignment: Center); Anchor: (Width: 28, Height: 22); Text: "A"; }
-          TextButton #ArmCharUpBtn { Anchor: (Width: 24, Height: 22); Style: @SmBtnStyle; Text: "^"; }
-          Group { Anchor: (Width: 8); }
-          TextButton #ArmCharInsBtn { Anchor: (Width: 28, Height: 22); Style: @AddBtnStyle; Text: "+"; }
-          TextButton #ArmCharDelBtn { Anchor: (Width: 28, Height: 22); Style: @RemoveBtnStyle; Text: "-"; }
+          TextButton #ArmApplyBtn { Anchor: (Width: 80, Height: 24); Style: @SaveBtnStyle; Text: "Apply"; }
+          Group { Anchor: (Width: 4); }
+          TextButton #ArmAddBtn { Anchor: (Width: 80, Height: 24); Style: @AddBtnStyle; Text: "+ Add"; }
         }
       }
 

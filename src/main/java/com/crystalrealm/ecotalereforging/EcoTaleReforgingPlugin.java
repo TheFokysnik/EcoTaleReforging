@@ -6,6 +6,7 @@ import com.crystalrealm.ecotalereforging.config.ConfigManager;
 import com.crystalrealm.ecotalereforging.config.ReforgeConfig;
 import com.crystalrealm.ecotalereforging.lang.LangManager;
 import com.crystalrealm.ecotalereforging.npc.ReforgeStationManager;
+import com.crystalrealm.ecotalereforging.provider.economy.EconomyBridge;
 import com.crystalrealm.ecotalereforging.service.ItemValidationService;
 import com.crystalrealm.ecotalereforging.service.ReforgeDataStore;
 import com.crystalrealm.ecotalereforging.service.ReforgeService;
@@ -37,12 +38,12 @@ import javax.annotation.Nonnull;
  *   <li>LuckPerms permission integration</li>
  * </ul>
  *
- * @version 1.0.0
+ * @version 1.0.4
  */
 public class EcoTaleReforgingPlugin extends JavaPlugin {
 
     private static final PluginLogger LOGGER = PluginLogger.forEnclosingClass();
-    private static final String VERSION = "1.0.2";
+    private static final String VERSION = "1.0.5";
 
     // ── Services ────────────────────────────────────────────
     private ConfigManager        configManager;
@@ -52,8 +53,7 @@ public class EcoTaleReforgingPlugin extends JavaPlugin {
     private ReforgeService       reforgeService;
     private WeaponStatsService   weaponStatsService;
     private ReforgeStationManager      stationManager;
-    private ReforgeActionBarSystem   actionBarSystem;
-
+    private ReforgeActionBarSystem   actionBarSystem;    private EconomyBridge        economyBridge;
     public EcoTaleReforgingPlugin(JavaPluginInit init) {
         super(init);
     }
@@ -90,8 +90,13 @@ public class EcoTaleReforgingPlugin extends JavaPlugin {
         // 5. Item validation service
         validator = new ItemValidationService(config, dataStore);
 
+        // 5.5. Economy bridge
+        economyBridge = new EconomyBridge();
+        economyBridge.activate(config.getGeneral().getEconomyProvider());
+        LOGGER.info("Economy provider: {}", economyBridge.getProviderName());
+
         // 6. Reforge service
-        reforgeService = new ReforgeService(config, validator, dataStore);
+        reforgeService = new ReforgeService(config, validator, dataStore, economyBridge);
 
         // 6.5. Weapon stats (via WeaponStatsViewer plugin)
         weaponStatsService = new WeaponStatsService();
@@ -178,6 +183,9 @@ public class EcoTaleReforgingPlugin extends JavaPlugin {
      * A {@code Class.forName} guard protects against the optional dependency
      * being absent at runtime.</p>
      */
+    /** SimpleEnchantments tooltip provider ID (must match exactly). */
+    private static final String SE_TOOLTIP_PROVIDER_ID = "simple-enchantments:enchantments";
+
     private void registerTooltipProvider(ReforgeConfig config) {
         try {
             // Guard: check if the library is present at runtime
@@ -188,6 +196,17 @@ public class EcoTaleReforgingPlugin extends JavaPlugin {
                     org.herolias.tooltips.api.DynamicTooltipsApiProvider.get();
 
             if (api != null) {
+                // Unregister SimpleEnchantments' tooltip provider if present.
+                // SE uses descriptionTranslationKey + its own packet-level
+                // translation injection, which makes it impossible for other
+                // providers to add additive lines alongside enchantment info.
+                // Our combined provider handles both enchantments and reforging.
+                if (api.unregisterProvider(SE_TOOLTIP_PROVIDER_ID)) {
+                    LOGGER.info("Unregistered SimpleEnchantments tooltip provider ({})"
+                            + " — enchantment display handled by EcoTaleReforging",
+                            SE_TOOLTIP_PROVIDER_ID);
+                }
+
                 ReforgeTooltipProvider provider = new ReforgeTooltipProvider(config);
                 api.registerProvider(provider);
                 LOGGER.info("ReforgeTooltipProvider registered with DynamicTooltipsLib (id: {})",
@@ -220,6 +239,11 @@ public class EcoTaleReforgingPlugin extends JavaPlugin {
                     LOGGER.warn("[Tooltip] Retry {} — API still null, will try again...", attempt + 1);
                     scheduleTooltipRetry(config, attempt + 1);
                     return;
+                }
+
+                // Unregister SE's provider on retry as well
+                if (api.unregisterProvider(SE_TOOLTIP_PROVIDER_ID)) {
+                    LOGGER.info("Unregistered SE tooltip provider on retry {}", attempt + 1);
                 }
 
                 ReforgeTooltipProvider provider = new ReforgeTooltipProvider(config);
